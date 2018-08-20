@@ -1,0 +1,27 @@
+version: '3.4'
+
+services:
+  sql.data:
+    image: microsoft/mssql-server-windows-developer
+
+  nosql.data:
+    image: mongo:windowsservercore
+
+  rabbitmq:
+    image: spring2/rabbitmq
+
+  orders.api:
+    image: ${DOCKER_REGISTRY}ordersapi
+    build:
+      context: .
+      dockerfile: Src\Services\Orders\Orders.API\Dockerfile
+
+
+
+
+  catalog.api:
+    image: ${DOCKER_REGISTRY}catalogapi
+    build:
+      context: .
+      dockerfile: Src\Services\Catalog\Catalog.API\Dockerfile
+
