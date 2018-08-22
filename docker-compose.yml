@@ -15,13 +15,14 @@ services:
     build:
       context: .
       dockerfile: Src\Services\Orders\Orders.API\Dockerfile
-
-
-
+    depends_on:
+      - sql.data
 
   catalog.api:
     image: ${DOCKER_REGISTRY}catalogapi
     build:
       context: .
       dockerfile: Src\Services\Catalog\Catalog.API\Dockerfile
+    depends_on:
+      - sql.data
 

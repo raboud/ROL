@@ -3,10 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Catalog.API.Infrastructure;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Catalog.API
 {
@@ -14,11 +17,49 @@ namespace Catalog.API
 	{
 		public static void Main(string[] args)
 		{
-			CreateWebHostBuilder(args).Build().Run();
+			CreateWebHostBuilder(args).Build()
+				.MigrateDbContext<Context>((context, services) =>
+				{
+					IHostingEnvironment env = services.GetService<IHostingEnvironment>();
+					IOptions<Settings> settings = services.GetService<IOptions<Settings>>();
+					ILogger<ContextSeed> logger = services.GetService<ILogger<ContextSeed>>();
+
+					new ContextSeed()
+					.SeedAsync(context, env, settings, logger)
+					.Wait();
+
+				})
+//				.MigrateDbContext<IntegrationEventLogContext>((_, __) => { })
+				.Run();
 		}
 
 		public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
 			WebHost.CreateDefaultBuilder(args)
-				.UseStartup<Startup>();
+				.UseStartup<Startup>()
+				//				.UseApplicationInsights()
+				//				.UseHealthChecks("/hc")
+				.UseContentRoot(Directory.GetCurrentDirectory())
+				.UseWebRoot("Pics")
+				.ConfigureAppConfiguration((builderContext, config) =>
+				{
+					config.AddEnvironmentVariables();
+				})
+				.ConfigureLogging((hostingContext, builder) =>
+				{
+					builder.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+					builder.AddConsole();
+					builder.AddDebug();
+				})
+;
+
+	}
+
+	public static class Ext
+	{
+		public static IWebHostBuilder UseApplicationInsights(this IWebHostBuilder webHostBuilder)
+		{
+			return webHostBuilder;
+		}
+
 	}
 }
