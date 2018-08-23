@@ -47,6 +47,8 @@ namespace Catalog.API
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 		{
+			var pathBase = Configuration["PATH_BASE"];
+
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
@@ -58,6 +60,11 @@ namespace Catalog.API
 
 			app.UseHttpsRedirection();
 			app.UseMvc();
+			app.UseSwagger()
+			  .UseSwaggerUI(c =>
+			  {
+				  c.SwaggerEndpoint($"{ (!string.IsNullOrEmpty(pathBase) ? pathBase : string.Empty) }/swagger/v1/swagger.json", "Catalog.API V1");
+			  });
 		}
 	}
 }

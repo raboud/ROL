@@ -2,13 +2,8 @@ version: '3.4'
 
 services:
   sql.data:
+    hostname: sql_data
     image: microsoft/mssql-server-windows-developer
-
-  nosql.data:
-    image: mongo:windowsservercore
-
-  rabbitmq:
-    image: spring2/rabbitmq
 
   orders.api:
     image: ${DOCKER_REGISTRY}ordersapi
