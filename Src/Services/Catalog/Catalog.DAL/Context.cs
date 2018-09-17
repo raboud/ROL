@@ -1,22 +1,23 @@
-﻿using Catalog.API.Model;
+﻿using ROL.Services.Catalog.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ROL.Services.Catalog.DAL.EntityConfigurations;
 
-namespace Catalog.API.Infrastructure
+namespace ROL.Services.Catalog.DAL
 {
 	public class Context : DbContext
 	{
-		internal DbSet<Brand> Brands { get; set; }
-		internal DbSet<Category> Categories { get; set; }
-		internal DbSet<Item> Items { get; set; }
-		internal DbSet<Unit> Units { get; set; }
-		internal DbSet<Vendor> Vendors { get; set; }
+		public DbSet<Brand> Brands { get; set; }
+		public DbSet<Category> Categories { get; set; }
+		public DbSet<Item> Items { get; set; }
+		public DbSet<Unit> Units { get; set; }
+		public DbSet<Vendor> Vendors { get; set; }
+		public DbSet<Variant> Variants { get; set; }
 
-		internal DbSet<ItemCategory> ItemCategories { get; set; }
+		public DbSet<ItemCategory> ItemCategories { get; set; }
 
 		public Context(DbContextOptions<Context> options) : base(options)
 		{
@@ -26,30 +27,15 @@ namespace Catalog.API.Infrastructure
 		{
 			base.OnModelCreating(modelBuilder);
 
+			modelBuilder.ApplyConfiguration(new BrandEntityTypeConfiguration());
+			modelBuilder.ApplyConfiguration(new CategoryEntityTypeConfiguration());
+			modelBuilder.ApplyConfiguration(new ItemEntityTypeConfiguration());
+			modelBuilder.ApplyConfiguration(new UnitEntityTypeConfiguration());
+			modelBuilder.ApplyConfiguration(new VariantEntityTypeConfiguration());
+			modelBuilder.ApplyConfiguration(new VendorEntityTypeConfiguration());
+
 			modelBuilder.Entity<ItemCategory>()
 				.HasKey(x => new { x.ItemId, x.CategoryId });
-
-			modelBuilder.Entity<Item>(e =>
-			{
-				e.Property(i => i.MetaData)
-					.HasConversion(
-						d => JsonConvert.SerializeObject(d, Formatting.None),
-						s => JsonConvert.DeserializeObject<Dictionary<string, string>>(s)
-					)
-					.HasMaxLength(4000)
-					.IsRequired();
-			});
-
-			modelBuilder.Entity<Variant>(e =>
-			{
-				e.Property(i => i.MetaData)
-					.HasConversion(
-						d => JsonConvert.SerializeObject(d, Formatting.None),
-						s => JsonConvert.DeserializeObject<Dictionary<string, string>>(s)
-					)
-					.HasMaxLength(4000)
-					.IsRequired();
-			});
 		}
 
 		public class ContextDesignFactory : IDesignTimeDbContextFactory<Context>

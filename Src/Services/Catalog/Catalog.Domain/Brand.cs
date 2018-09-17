@@ -4,15 +4,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Catalog.API.Model
+namespace ROL.Services.Catalog.Domain
 {
-	public class Vendor
+	public class Brand
 	{
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-		public Guid Id { get; set; }
+		public Guid Id  { get; set; }
 
 		public string Name { get; set; }
-
 		public bool InActive { get; set; }
 	}
 }

@@ -1,86 +1,85 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Catalog.API.Migrations
+namespace ROL.Services.Catalog.DAL.Migrations
 {
-    public partial class first : Migration
+    public partial class First : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Brands",
+                name: "Brand",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(maxLength: 100, nullable: false),
                     InActive = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Brands", x => x.Id);
+                    table.PrimaryKey("PK_Brand", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Categories",
+                name: "Category",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(maxLength: 100, nullable: false),
                     InActive = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Categories", x => x.Id);
+                    table.PrimaryKey("PK_Category", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Units",
+                name: "Unit",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(maxLength: 100, nullable: false),
                     InActive = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Units", x => x.Id);
+                    table.PrimaryKey("PK_Unit", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Vendors",
+                name: "Vendor",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(maxLength: 100, nullable: false),
                     InActive = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Vendors", x => x.Id);
+                    table.PrimaryKey("PK_Vendor", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Items",
+                name: "Item",
                 columns: table => new
                 {
+                    MetaData = table.Column<string>(maxLength: 4000, nullable: false),
                     Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(maxLength: 50, nullable: false),
                     Description = table.Column<string>(nullable: true),
                     PictureFileName = table.Column<string>(nullable: true),
-                    BrandId = table.Column<int>(nullable: false),
-                    BrandId1 = table.Column<Guid>(nullable: true),
-                    InActive = table.Column<bool>(nullable: false),
-                    MetaData = table.Column<string>(maxLength: 4000, nullable: false)
+                    BrandId = table.Column<Guid>(nullable: false),
+                    InActive = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Items", x => x.Id);
+                    table.PrimaryKey("PK_Item", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Items_Brands_BrandId1",
-                        column: x => x.BrandId1,
-                        principalTable: "Brands",
+                        name: "FK_Item_Brand_BrandId",
+                        column: x => x.BrandId,
+                        principalTable: "Brand",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -94,15 +93,15 @@ namespace Catalog.API.Migrations
                 {
                     table.PrimaryKey("PK_ItemCategories", x => new { x.ItemId, x.CategoryId });
                     table.ForeignKey(
-                        name: "FK_ItemCategories_Categories_CategoryId",
+                        name: "FK_ItemCategories_Category_CategoryId",
                         column: x => x.CategoryId,
-                        principalTable: "Categories",
+                        principalTable: "Category",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ItemCategories_Items_ItemId",
+                        name: "FK_ItemCategories_Item_ItemId",
                         column: x => x.ItemId,
-                        principalTable: "Items",
+                        principalTable: "Item",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -111,11 +110,14 @@ namespace Catalog.API.Migrations
                 name: "Variant",
                 columns: table => new
                 {
+                    MetaData = table.Column<string>(maxLength: 4000, nullable: false),
                     Id = table.Column<Guid>(nullable: false),
+                    Name = table.Column<string>(maxLength: 50, nullable: false),
+                    PictureFileName = table.Column<string>(nullable: true),
                     ItemId = table.Column<Guid>(nullable: false),
-                    Price = table.Column<decimal>(nullable: false),
-                    Cost = table.Column<decimal>(nullable: false),
-                    SuggestPrice = table.Column<decimal>(nullable: false),
+                    Price = table.Column<decimal>(type: "Decimal(19,4)", nullable: false),
+                    Cost = table.Column<decimal>(type: "Decimal(19,4)", nullable: false),
+                    SuggestPrice = table.Column<decimal>(type: "Decimal(19,4)", nullable: false),
                     UnitId = table.Column<Guid>(nullable: false),
                     Count = table.Column<int>(nullable: false),
                     VendorId = table.Column<Guid>(nullable: false),
@@ -124,31 +126,47 @@ namespace Catalog.API.Migrations
                     AvailableStock = table.Column<int>(nullable: false),
                     RestockThreshold = table.Column<int>(nullable: false),
                     MaxStockThreshold = table.Column<int>(nullable: false),
-                    OnReorder = table.Column<bool>(nullable: false),
-                    MetaData = table.Column<string>(maxLength: 4000, nullable: false)
+                    OnReorder = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Variant", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Variant_Items_ItemId",
+                        name: "FK_Variant_Item_ItemId",
                         column: x => x.ItemId,
-                        principalTable: "Items",
+                        principalTable: "Item",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Variant_Units_UnitId",
+                        name: "FK_Variant_Unit_UnitId",
                         column: x => x.UnitId,
-                        principalTable: "Units",
+                        principalTable: "Unit",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Variant_Vendors_VendorId",
+                        name: "FK_Variant_Vendor_VendorId",
                         column: x => x.VendorId,
-                        principalTable: "Vendors",
+                        principalTable: "Vendor",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Brand_Name",
+                table: "Brand",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Category_Name",
+                table: "Category",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Item_BrandId",
+                table: "Item",
+                column: "BrandId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ItemCategories_CategoryId",
@@ -156,9 +174,10 @@ namespace Catalog.API.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Items_BrandId1",
-                table: "Items",
-                column: "BrandId1");
+                name: "IX_Unit_Name",
+                table: "Unit",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Variant_ItemId",
@@ -174,6 +193,18 @@ namespace Catalog.API.Migrations
                 name: "IX_Variant_VendorId",
                 table: "Variant",
                 column: "VendorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Variant_Name_Count_UnitId",
+                table: "Variant",
+                columns: new[] { "Name", "Count", "UnitId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Vendor_Name",
+                table: "Vendor",
+                column: "Name",
+                unique: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -185,19 +216,19 @@ namespace Catalog.API.Migrations
                 name: "Variant");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "Category");
 
             migrationBuilder.DropTable(
-                name: "Items");
+                name: "Item");
 
             migrationBuilder.DropTable(
-                name: "Units");
+                name: "Unit");
 
             migrationBuilder.DropTable(
-                name: "Vendors");
+                name: "Vendor");
 
             migrationBuilder.DropTable(
-                name: "Brands");
+                name: "Brand");
         }
     }
 }

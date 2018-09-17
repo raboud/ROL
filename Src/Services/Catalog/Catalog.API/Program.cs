@@ -2,21 +2,23 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
-using Catalog.API.Infrastructure;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using ROL.Services.Catalog.DAL;
 
-namespace Catalog.API
+namespace ROL.Services.Catalog.API
 {
 	public class Program
 	{
 		public static void Main(string[] args)
 		{
+//			System.Net.ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 			CreateWebHostBuilder(args).Build()
 				.MigrateDbContext<Context>((context, services) =>
 				{

@@ -44,7 +44,7 @@ namespace Microsoft.AspNetCore.Hosting
 						context.Database
 						.Migrate();
 
-						seeder(context, services);
+//						seeder(context, services);
 					});
 
 

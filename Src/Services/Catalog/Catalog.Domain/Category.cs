@@ -4,14 +4,16 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Catalog.API.Model
+namespace ROL.Services.Catalog.Domain
 {
-	public class Unit
+	public class Category
 	{
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public Guid Id { get; set; }
 
 		public string Name { get; set; }
+
+		public List<ItemCategory> ItemCategories { get; set; }
 
 		public bool InActive { get; set; }
 	}

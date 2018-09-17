@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using Catalog.API.Infrastructure;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -14,8 +14,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json.Serialization;
+using ROL.Services.Catalog.API.Infrastructure;
 
-namespace Catalog.API
+namespace ROL.Services.Catalog.API
 {
 	public class Startup
 	{
@@ -38,6 +39,8 @@ namespace Catalog.API
 				.AddEventBus(Configuration)
 				.AddSwagger(Configuration);
 
+			services.AddAutoMapper(x => x.AddProfile(new AutoMapperProfile()));
+
 			ContainerBuilder container = new ContainerBuilder();
 			container.Populate(services);
 			return new AutofacServiceProvider(container.Build());
@@ -47,7 +50,7 @@ namespace Catalog.API
 		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 		{
-			var pathBase = Configuration["PATH_BASE"];
+			string pathBase = Configuration["PATH_BASE"];
 
 			if (env.IsDevelopment())
 			{
@@ -58,7 +61,7 @@ namespace Catalog.API
 				app.UseHsts();
 			}
 
-			app.UseHttpsRedirection();
+//			app.UseHttpsRedirection();
 			app.UseMvc();
 			app.UseSwagger()
 			  .UseSwaggerUI(c =>

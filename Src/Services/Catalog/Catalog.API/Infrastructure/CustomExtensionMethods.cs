@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
+using ROL.Services.Catalog.DAL;
 using ROL.Services.Common.API.Infrastructure.Filters;
 using Swashbuckle.AspNetCore.Swagger;
 using System;
@@ -12,7 +13,7 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Reflection;
 
-namespace Catalog.API.Infrastructure
+namespace ROL.Services.Catalog.API.Infrastructure
 {
 	public static class CustomExtensionMethods
 	{
@@ -90,7 +91,7 @@ namespace Catalog.API.Infrastructure
 				options.UseSqlServer(configuration["ConnectionString"],
 									 sqlServerOptionsAction: sqlOptions =>
 									 {
-										 sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
+										 sqlOptions.MigrationsAssembly(typeof(Context).GetTypeInfo().Assembly.GetName().Name);
 										 //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
 										 sqlOptions.EnableRetryOnFailure(maxRetryCount: 10, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
 									 });
