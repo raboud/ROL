@@ -1,12 +1,12 @@
 version: '3.4'
 
 services:
-  sql.data:
-    environment:
-      - sa_password=Pass@word
-      - ACCEPT_EULA=Y
-    ports:
-      - "5433:1433"    # Important: In a production environment your should remove the external port
+#  sql.data:
+#    environment:
+#      - sa_password=Pass@word
+#      - ACCEPT_EULA=Y
+#    ports:
+#      - "5433:1433"    # Important: In a production environment your should remove the external port
 
   orders.api:
     environment:
@@ -22,9 +22,9 @@ services:
   catalog.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
+      - ASPNETCORE_URLS=https://+:443
     ports:
-      - "5002:80"
+#      - "5002:80"
       - "6002:443"
     volumes:
       - ${APPDATA}/ASP.NET/Https:C:\Users\ContainerUser\AppData\Roaming\ASP.NET\Https:ro

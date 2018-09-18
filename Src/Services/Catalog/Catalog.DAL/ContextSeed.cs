@@ -16,16 +16,20 @@ namespace ROL.Services.Catalog.DAL
 {
 	public class ContextSeed
 	{
-		public async Task SeedAsync(Context context, IHostingEnvironment env, IOptions<Settings> settings, ILogger<ContextSeed> logger)
+		public Task SeedAsync(Context context, IHostingEnvironment env, IOptions<Settings> settings, ILogger<ContextSeed> logger)
+		{
+			bool useCustomizationData = settings.Value.UseCustomizationData;
+			string contentRootPath = env.ContentRootPath;
+			string picturePath = env.WebRootPath;
+			return SeedAsync(context, logger, useCustomizationData, contentRootPath, picturePath);
+		}
+
+		public async Task SeedAsync(Context context, ILogger<ContextSeed> logger, bool useCustomizationData, string contentRootPath, string picturePath)
 		{
 			Policy policy = CreatePolicy(logger, nameof(ContextSeed));
 
 			await policy.ExecuteAsync(async() => 
 			{
-				bool useCustomizationData = settings.Value.UseCustomizationData;
-				string contentRootPath = env.ContentRootPath;
-				string picturePath = env.WebRootPath;
-
 				string fileName = Path.Combine(contentRootPath, "Setup", "Catalog.json");
 				if (File.Exists(fileName))
 				{
@@ -41,7 +45,7 @@ namespace ROL.Services.Catalog.DAL
 					await ProcessVendors(data.Vendors, context, logger);
 					await ProcessUnits(data.Units, context, logger);
 					await ProcessCategories(data.Categories, context, logger);
-					//					await processProducts(data.Products, context, logger);
+					await ProcessProducts(data.Products, context, logger);
 
 					await context.SaveChangesAsync();
 				}
@@ -143,7 +147,7 @@ namespace ROL.Services.Catalog.DAL
 					}
 					Item p = new Item
 					{
-						Id = item.Id,
+//						Id = item.Id,
 						Name = item.Name,
 						Brand = brand
 					};
@@ -151,13 +155,14 @@ namespace ROL.Services.Catalog.DAL
 					p.Description = item.Description;
 					p.PictureFileName = item.PictureFileName;
 
+					//p.Count = item.Count;
 					//p.Unit = unit;
 					//p.UnitId = p.Unit.Id;
+
 					//p.Vendor = vendor;
 					//p.VendorId = p.Vendor.Id;
 					//p.AvailableStock = item.AvailableStock;
 					//p.Cost = item.Cost;
-					//p.Count = item.Count;
 					//p.MaxStockThreshold = item.MaxStockThreshold;
 					//p.Price = item.Price;
 					//p.RestockThreshold = item.RestockThreshold;
