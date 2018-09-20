@@ -175,7 +175,7 @@ namespace ROL.Services.Catalog.API.Controllers
 
         // PUT: api/Products/5
         [HttpPut("{id}")]
-		[Authorize(Roles = "admin")]
+//		[Authorize(Roles = "admin")]
 		[ProducesResponseType((int)HttpStatusCode.NotFound)]
 		[ProducesResponseType((int)HttpStatusCode.Created)]
 		public async Task<IActionResult> PutProduct([FromRoute] Guid id, [FromBody] ItemDTO product)
@@ -280,7 +280,7 @@ namespace ROL.Services.Catalog.API.Controllers
 
         // POST: api/Products
         [HttpPost]
-		[Authorize(Roles = "admin")]
+//		[Authorize(Roles = "admin")]
 		[ProducesResponseType((int)HttpStatusCode.Created)]
 		public async Task<IActionResult> PostProduct([FromBody] ItemDTO product)
         {
@@ -290,10 +290,14 @@ namespace ROL.Services.Catalog.API.Controllers
             }
 			Item p2 = _mapper.Map<Item>(product);
 
-            _context.Items.Add(p2);
-            await _context.SaveChangesAsync();
+			QueryTrackingBehavior initialState = _context.ChangeTracker.QueryTrackingBehavior;
+			_context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
 
-            return CreatedAtAction("GetProduct", new { id = product.Id }, product);
+			_context.Items.Add(p2);
+            int changes = await _context.SaveChangesAsync();
+			_context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
+
+			return CreatedAtAction("GetProduct", new { id = p2.Id }, _mapper.Map<ItemDTO>(p2));
         }
 
         // DELETE: api/Products/5

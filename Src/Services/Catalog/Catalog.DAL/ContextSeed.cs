@@ -33,7 +33,9 @@ namespace ROL.Services.Catalog.DAL
 				string fileName = Path.Combine(contentRootPath, "Setup", "Catalog.json");
 				if (File.Exists(fileName))
 				{
-//					string raw = await File.ReadAllTextAsync(fileName);
+					QueryTrackingBehavior initialState = context.ChangeTracker.QueryTrackingBehavior;
+					context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
+					
 					string raw;
 					using (StreamReader sourceReader = File.OpenText(fileName))
 					{
@@ -48,9 +50,11 @@ namespace ROL.Services.Catalog.DAL
 					await ProcessProducts(data.Products, context, logger);
 
 					await context.SaveChangesAsync();
+
+					context.ChangeTracker.QueryTrackingBehavior = initialState ;
 				}
 
-//				GetCatalogItemPictures(contentRootPath, picturePath);
+				//				GetCatalogItemPictures(contentRootPath, picturePath);
 			});
 		}
 

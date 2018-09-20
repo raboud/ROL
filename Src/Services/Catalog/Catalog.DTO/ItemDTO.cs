@@ -20,6 +20,12 @@ namespace ROL.Services.Catalog.DTO
 
 		public Dictionary<string, string> MetaData { get; set; }
 
+		public ItemDTO()
+		{
+			this.MetaData = new Dictionary<string, string>();
+			this.Types = new List<string>();
+			this.Variants = new List<VariantDTO>();
+		}
 	}
 
 }

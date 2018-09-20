@@ -19,7 +19,7 @@ namespace ROL.Services.Catalog.API.Infrastructure
 			CreateMap<Category, CategoryDTO>().ReverseMap();
 			CreateMap<Item, ItemDTO>()
 				.ForMember(p => p.Brand, opt => opt.MapFrom(src => src.Brand.Name))
-				.ForMember(p => p.PictureUri, opt => opt.ResolveUsing<PictureUriReslover>())
+//				.ForMember(p => p.PictureUri, opt => opt.ResolveUsing<PictureUriReslover>())
 				.ForMember(p => p.Types, opt => opt.MapFrom(src => src.ItemCategories.Select(e => e.Category.Name).ToList()));
 			CreateMap<ItemDTO, Item>()
 				.ForMember(p => p.Brand, opt => opt.ResolveUsing<BrandReslover>());
@@ -66,7 +66,7 @@ namespace ROL.Services.Catalog.API.Infrastructure
 		{
 			Unit item = _context.Units.FirstOrDefault(u => u.Name == source.Unit);
 			destination.UnitId = item.Id;
-			return item;
+			return null;
 		}
 	}
 
@@ -83,7 +83,7 @@ namespace ROL.Services.Catalog.API.Infrastructure
 		{
 			Vendor item = _context.Vendors.FirstOrDefault(u => u.Name == source.Vendor);
 			destination.VendorId = item.Id;
-			return item;
+			return null;
 		}
 	}
 
@@ -101,7 +101,7 @@ namespace ROL.Services.Catalog.API.Infrastructure
 		{
 			Brand item = _context.Brands.FirstOrDefault(u => u.Name == source.Brand);
 			destination.BrandId = item.Id;
-			return item;
+			return null;
 		}
 	}
 }
