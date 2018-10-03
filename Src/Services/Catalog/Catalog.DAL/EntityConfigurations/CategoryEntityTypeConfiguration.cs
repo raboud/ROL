@@ -19,6 +19,13 @@ namespace ROL.Services.Catalog.DAL.EntityConfigurations
 
 			builder.HasIndex(v => v.Name)
 				.IsUnique();
+
+			builder.HasMany(c => c.Children)
+				.WithOne();
+
+			builder.HasOne(c => c.Parent)
+				.WithMany(p => p.Children)
+				.HasForeignKey(c => c.ParentId);
 		}
 	}
 }

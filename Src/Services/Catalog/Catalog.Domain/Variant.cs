@@ -14,6 +14,7 @@ namespace ROL.Services.Catalog.Domain
 
 		public string PictureFileName { get; set; }
 		public Guid ItemId { get; set; }
+		public Item Item { get; set; }
 
 		[Column(TypeName = "Decimal(19,4)")]
 		public decimal Price { get; set; }

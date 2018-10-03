@@ -23,6 +23,7 @@ namespace ROL.Services.Catalog.Domain
 		public Item()
 		{
 			ItemCategories = new List<ItemCategory>();
+			Variants = new List<Variant>();
 		}
 	}
 }

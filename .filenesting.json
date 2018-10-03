@@ -1,0 +1,21 @@
+{
+	"help": "https://go.microsoft.com/fwlink/?linkid=866610",
+	"dependentFileProviders": {
+			"add": {
+				"fileSuffixToExtension": {
+									"add": {
+										"-vsdoc.js": [
+											".js"
+										],
+										".Designer.cs": [
+											".cs"
+										],
+										".Development.json": [
+											".json"
+										]
+									}
+				},
+				"pathSegment": {}
+			}
+	}
+}

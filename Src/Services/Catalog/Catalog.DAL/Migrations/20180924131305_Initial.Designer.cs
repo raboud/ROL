@@ -10,8 +10,8 @@ using ROL.Services.Catalog.DAL;
 namespace ROL.Services.Catalog.DAL.Migrations
 {
     [DbContext(typeof(Context))]
-    [Migration("20180916205901_First")]
-    partial class First
+    [Migration("20180924131305_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -51,10 +51,14 @@ namespace ROL.Services.Catalog.DAL.Migrations
                         .IsRequired()
                         .HasMaxLength(100);
 
+                    b.Property<Guid>("ParentId");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
                         .IsUnique();
+
+                    b.HasIndex("ParentId");
 
                     b.ToTable("Category");
                 });
@@ -133,6 +137,8 @@ namespace ROL.Services.Catalog.DAL.Migrations
 
                     b.Property<Guid>("ItemId");
 
+                    b.Property<Guid?>("ItemId1");
+
                     b.Property<int>("MaxStockThreshold");
 
                     b.Property<string>("MetaData")
@@ -167,6 +173,8 @@ namespace ROL.Services.Catalog.DAL.Migrations
 
                     b.HasIndex("ItemId");
 
+                    b.HasIndex("ItemId1");
+
                     b.HasIndex("UnitId");
 
                     b.HasIndex("VendorId");
@@ -196,6 +204,14 @@ namespace ROL.Services.Catalog.DAL.Migrations
                     b.ToTable("Vendor");
                 });
 
+            modelBuilder.Entity("ROL.Services.Catalog.Domain.Category", b =>
+                {
+                    b.HasOne("ROL.Services.Catalog.Domain.Category", "Parent")
+                        .WithMany("Children")
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.Cascade);
+                });
+
             modelBuilder.Entity("ROL.Services.Catalog.Domain.Item", b =>
                 {
                     b.HasOne("ROL.Services.Catalog.Domain.Brand", "Brand")
@@ -219,10 +235,14 @@ namespace ROL.Services.Catalog.DAL.Migrations
 
             modelBuilder.Entity("ROL.Services.Catalog.Domain.Variant", b =>
                 {
-                    b.HasOne("ROL.Services.Catalog.Domain.Item")
-                        .WithMany("Variants")
+                    b.HasOne("ROL.Services.Catalog.Domain.Item", "Item")
+                        .WithMany()
                         .HasForeignKey("ItemId")
                         .OnDelete(DeleteBehavior.Cascade);
+
+                    b.HasOne("ROL.Services.Catalog.Domain.Item")
+                        .WithMany("Variants")
+                        .HasForeignKey("ItemId1");
 
                     b.HasOne("ROL.Services.Catalog.Domain.Unit", "Unit")
                         .WithMany()

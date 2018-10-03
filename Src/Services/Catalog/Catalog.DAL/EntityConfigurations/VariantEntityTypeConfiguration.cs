@@ -39,6 +39,10 @@ namespace ROL.Services.Catalog.DAL.EntityConfigurations
 				.WithMany()
 				.HasForeignKey(ci => ci.UnitId);
 
+			builder.HasOne(ci => ci.Item)
+				.WithMany()
+				.HasForeignKey(ci => ci.ItemId);
+
 			builder.HasIndex(p => new { p.Name, p.Count, p.UnitId })
 				.IsUnique();
 

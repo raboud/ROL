@@ -16,5 +16,14 @@ namespace ROL.Services.Catalog.Domain
 		public List<ItemCategory> ItemCategories { get; set; }
 
 		public bool InActive { get; set; }
+
+		public Guid ParentId { get; set; }
+		public Category Parent {get;set;}
+		public List<Category> Children { get; set; }
+
+		public Category()
+		{
+			Children = new List<Category>();
+		}
 	}
 }

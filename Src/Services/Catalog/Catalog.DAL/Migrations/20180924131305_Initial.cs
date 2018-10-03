@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace ROL.Services.Catalog.DAL.Migrations
 {
-    public partial class First : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -26,11 +26,18 @@ namespace ROL.Services.Catalog.DAL.Migrations
                 {
                     Id = table.Column<Guid>(nullable: false),
                     Name = table.Column<string>(maxLength: 100, nullable: false),
-                    InActive = table.Column<bool>(nullable: false)
+                    InActive = table.Column<bool>(nullable: false),
+                    ParentId = table.Column<Guid>(nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Category", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Category_Category_ParentId",
+                        column: x => x.ParentId,
+                        principalTable: "Category",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -126,7 +133,8 @@ namespace ROL.Services.Catalog.DAL.Migrations
                     AvailableStock = table.Column<int>(nullable: false),
                     RestockThreshold = table.Column<int>(nullable: false),
                     MaxStockThreshold = table.Column<int>(nullable: false),
-                    OnReorder = table.Column<bool>(nullable: false)
+                    OnReorder = table.Column<bool>(nullable: false),
+                    ItemId1 = table.Column<Guid>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -137,6 +145,12 @@ namespace ROL.Services.Catalog.DAL.Migrations
                         principalTable: "Item",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Variant_Item_ItemId1",
+                        column: x => x.ItemId1,
+                        principalTable: "Item",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Variant_Unit_UnitId",
                         column: x => x.UnitId,
@@ -164,6 +178,11 @@ namespace ROL.Services.Catalog.DAL.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Category_ParentId",
+                table: "Category",
+                column: "ParentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Item_BrandId",
                 table: "Item",
                 column: "BrandId");
@@ -183,6 +202,11 @@ namespace ROL.Services.Catalog.DAL.Migrations
                 name: "IX_Variant_ItemId",
                 table: "Variant",
                 column: "ItemId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Variant_ItemId1",
+                table: "Variant",
+                column: "ItemId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Variant_UnitId",
