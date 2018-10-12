@@ -11,7 +11,7 @@ namespace ROL.Services.Catalog.DAL.EntityConfigurations
 	{
 		virtual public void Configure(EntityTypeBuilder<TEntity> builder)
 		{
-			var converter = new ValueConverter<Dictionary<string, string>, string>(
+			ValueConverter<Dictionary<string, string>, string> converter = new ValueConverter<Dictionary<string, string>, string>(
 				v => JsonConvert.SerializeObject(v, Formatting.None),
 				v => JsonConvert.DeserializeObject<Dictionary<string, string>>(v));
 

@@ -22,19 +22,19 @@ namespace ROL.Services.Catalog.DAL
 
 		public Context()
 		{
-			this.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+			ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 		}
 
 		public Context(DbContextOptions<Context> options) : base(options)
 		{
-			this.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+			ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 		}
 
 		public void Migrate()
 		{
-			if (!this.Database.IsInMemory())
+			if (!Database.IsInMemory())
 			{
-				this.Database.Migrate();
+				Database.Migrate();
 
 			}
 		}

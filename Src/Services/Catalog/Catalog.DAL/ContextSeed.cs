@@ -170,8 +170,10 @@ namespace ROL.Services.Catalog.DAL
 
 					foreach (dynamic variant in item.Variants)
 					{
-						Variant v = new Variant();
-						v.Item = p;
+						Variant v = new Variant
+						{
+							Item = p
+						};
 						Unit unit = units.FirstOrDefault(b => b.Name == (string)variant.Unit);
 						Vendor vendor = vendors.FirstOrDefault(b => b.Name == (string)variant.Vendor);
 						v.Count = variant.Count;

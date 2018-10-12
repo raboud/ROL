@@ -15,7 +15,7 @@ namespace Catalog.DTO.Tests.Unit
 {
 	public class DALTests : IClassFixture<DatabaseFixture>
 	{
-		private IConfiguration config { get { return this.fixture.config; } }
+		private IConfiguration _config { get { return fixture.Config; } }
 		DatabaseFixture fixture;
 
 		public DALTests(DatabaseFixture fixture)
@@ -26,7 +26,7 @@ namespace Catalog.DTO.Tests.Unit
 		[Fact]
 		public async void MetaDataTest()
 		{
-			using (Context context = Context.ContextDesignFactory.CreateDbContext(config))
+			using (Context context = Context.ContextDesignFactory.CreateDbContext(_config))
 			{
 				LoggerFactory loggerFactory = new LoggerFactory();
 				ILogger<ContextSeed> logger = loggerFactory.AddConsole().CreateLogger<ContextSeed>();
@@ -53,7 +53,7 @@ namespace Catalog.DTO.Tests.Unit
 				int changes = await context.SaveChangesAsync();
 			}
 
-			using (Context context2 = Context.ContextDesignFactory.CreateDbContext(config))
+			using (Context context2 = Context.ContextDesignFactory.CreateDbContext(_config))
 			{
 				Item item2 = await context2.Items.Include(i => i.Brand)
 					.Include(i => i.ItemCategories)
@@ -75,7 +75,7 @@ namespace Catalog.DTO.Tests.Unit
 		[Fact]
 		public async void NoTrackingTest()
 		{
-			using (Context context = Context.ContextDesignFactory.CreateDbContext(config))
+			using (Context context = Context.ContextDesignFactory.CreateDbContext(_config))
 			{
 				LoggerFactory loggerFactory = new LoggerFactory();
 				ILogger<ContextSeed> logger = loggerFactory.AddDebug().CreateLogger<ContextSeed>();
@@ -92,7 +92,7 @@ namespace Catalog.DTO.Tests.Unit
 				int changes = await context.SaveChangesAsync();
 				Assert.Equal(1, changes);
 			}
-			using (Context context2 = Context.ContextDesignFactory.CreateDbContext(config))
+			using (Context context2 = Context.ContextDesignFactory.CreateDbContext(_config))
 			{
 				Item item2 = await context2.Items.Where(i => i.Name == "5-MTHF - updated").FirstOrDefaultAsync();
 				Assert.NotNull(item2);
@@ -139,26 +139,26 @@ namespace Catalog.DTO.Tests.Unit
 
 	public class DatabaseFixture : IDisposable
 	{
-		public Context dbContext { get; set; }
-		public IConfiguration config { get; set; }
+		public Context Context { get; set; }
+		public IConfiguration Config { get; set; }
 		public IContainer Container { get; set; }
 
 		private const string TestSuffixConvention = "Tests";
 
 		public DatabaseFixture()
 		{
-			config = new ConfigurationBuilder()
+			Config = new ConfigurationBuilder()
 						.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
 						.Build();
-			dbContext = Context.ContextDesignFactory.CreateDbContext(config);
+			Context = Context.ContextDesignFactory.CreateDbContext(Config);
 			LoggerFactory loggerFactory = new LoggerFactory();
 			ILogger<ContextSeed> logger = loggerFactory.AddConsole().CreateLogger<ContextSeed>();
 
 			ContextSeed seed = new ContextSeed();
 
-			seed.SeedAsync(dbContext, logger, false, Environment.CurrentDirectory, "").Wait();
+			seed.SeedAsync(Context, logger, false, Environment.CurrentDirectory, "").Wait();
 
-			var builder = new ContainerBuilder();
+			ContainerBuilder builder = new ContainerBuilder();
 
 			// configure your container
 			// e.g. builder.RegisterModule<TestOverrideModule>();
@@ -168,7 +168,7 @@ namespace Catalog.DTO.Tests.Unit
 						.Build())
 				.As<IConfiguration>()
 				.SingleInstance();
-			builder.Register(context => dbContext)
+			builder.Register(context => Context)
 				.As<Context>()
 				.SingleInstance();
 
@@ -178,7 +178,7 @@ namespace Catalog.DTO.Tests.Unit
 		public void Dispose()
 		{
 			Container.Dispose();
-			dbContext.Dispose();
+			Context.Dispose();
 		}
 
 	}

@@ -22,9 +22,9 @@ namespace ROL.Services.Catalog.DTO
 
 		public ItemDTO()
 		{
-			this.MetaData = new Dictionary<string, string>();
-			this.Types = new List<string>();
-			this.Variants = new List<VariantDTO>();
+			MetaData = new Dictionary<string, string>();
+			Types = new List<string>();
+			Variants = new List<VariantDTO>();
 		}
 	}
 
