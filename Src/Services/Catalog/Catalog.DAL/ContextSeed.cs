@@ -11,32 +11,51 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Polly.Retry;
 
 namespace ROL.Services.Catalog.DAL
 {
 	public class ContextSeed
 	{
+		public Context Context;
+		public ILogger<ContextSeed> Logger;
+		public string ContentRootPath { get; set; }
+		public string PicturePath { get; set; }
+		public bool UseCustomizationData { get; set; } = false;
+
 		public Task SeedAsync(Context context, IHostingEnvironment env, IOptions<Settings> settings, ILogger<ContextSeed> logger)
 		{
-			bool useCustomizationData = settings.Value.UseCustomizationData;
-			string contentRootPath = env.ContentRootPath;
-			string picturePath = env.WebRootPath;
-			return SeedAsync(context, logger, useCustomizationData, contentRootPath, picturePath);
+			this.Context = context;
+			this.Logger = logger;
+			UseCustomizationData = settings.Value.UseCustomizationData;
+			ContentRootPath = env.ContentRootPath;
+			PicturePath = env.WebRootPath;
+			return SeedAsync();
 		}
 
-		public async Task SeedAsync(Context context, ILogger<ContextSeed> logger, bool useCustomizationData, string contentRootPath, string picturePath)
+		public Task SeedAsync(Context context, ILogger<ContextSeed> logger, bool useCustomizationData, string contentRootPath, string picturePath)
 		{
-			logger.LogInformation("Enterring SeedAsync");
+			this.Context = context;
+			this.Logger = logger;
+			this.UseCustomizationData = useCustomizationData;
+			this.ContentRootPath = contentRootPath;
+			this.PicturePath = picturePath;
+			return SeedAsync();
+		}
 
-			Policy policy = CreatePolicy(logger, nameof(ContextSeed));
+		private async Task SeedAsync()
+		{
+			Logger.LogInformation("Enterring SeedAsync");
+
+			AsyncRetryPolicy policy = CreatePolicy(nameof(ContextSeed));
 
 			await policy.ExecuteAsync(async() => 
 			{
-				string fileName = Path.Combine(contentRootPath, "Setup", "Catalog.json");
+				string fileName = Path.Combine(ContentRootPath, "Setup", "Catalog.json");
 				if (File.Exists(fileName))
 				{
-					QueryTrackingBehavior initialState = context.ChangeTracker.QueryTrackingBehavior;
-					context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
+					QueryTrackingBehavior initialState = Context.ChangeTracker.QueryTrackingBehavior;
+					Context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
 					
 					string raw;
 					using (StreamReader sourceReader = File.OpenText(fileName))
@@ -45,22 +64,22 @@ namespace ROL.Services.Catalog.DAL
 					}
 					dynamic data = JObject.Parse(raw);
 
-					await ProcessBrands(data.Brands, context, logger);
-					await ProcessVendors(data.Vendors, context, logger);
-					await ProcessUnits(data.Units, context, logger);
-					await ProcessCategories(data.Categories, context, logger);
-					await ProcessProducts(data.Products, context, logger);
+					await ProcessBrands(data.Brands);
+					await ProcessVendors(data.Vendors);
+					await ProcessUnits(data.Units);
+					await ProcessCategories(data.Categories);
+					await ProcessProducts(data.Products);
 
-					await context.SaveChangesAsync();
+					await Context.SaveChangesAsync();
 
-					context.ChangeTracker.QueryTrackingBehavior = initialState ;
+					Context.ChangeTracker.QueryTrackingBehavior = initialState ;
 				}
 
 				//				GetCatalogItemPictures(contentRootPath, picturePath);
 			});
 		}
 
-		private Policy CreatePolicy(ILogger<ContextSeed> logger, string prefix, int retries = 3)
+		private AsyncRetryPolicy CreatePolicy(string prefix, int retries = 3)
 		{
 			return Policy.Handle<SqlException>().
 				WaitAndRetryAsync(
@@ -68,53 +87,53 @@ namespace ROL.Services.Catalog.DAL
 					sleepDurationProvider: retry => System.TimeSpan.FromSeconds(5),
 					onRetry: (exception, timeSpan, retry, ctx) =>
 					{
-						logger.LogTrace($"[{prefix}] Exception {exception.GetType().Name} with message ${exception.Message} detected on attempt {retry} of {retries}");
+						Logger.LogTrace($"[{prefix}] Exception {exception.GetType().Name} with message ${exception.Message} detected on attempt {retry} of {retries}");
 					}
 				);
 		}
 
-		static async Task ProcessBrands(dynamic items, Context context, ILogger<ContextSeed> logger)
+		async Task ProcessBrands(dynamic items)
 		{
-			List<Brand> data = await context.Brands.ToListAsync();
+			List<Brand> data = await Context.Brands.ToListAsync();
 			foreach (string item in items)
 			{
 				if (!data.Any(b => b.Name == item))
 				{
-					context.Brands.Add(new Brand() { Name = item });
+					Context.Brands.Add(new Brand() { Name = item });
 				}
 			}
-			await context.SaveChangesAsync();
+			await Context.SaveChangesAsync();
 		}
 
-		static async Task ProcessVendors(dynamic items, Context context, ILogger<ContextSeed> logger)
+		async Task ProcessVendors(dynamic items)
 		{
-			List<Vendor> data = await context.Vendors.ToListAsync();
+			List<Vendor> data = await Context.Vendors.ToListAsync();
 			foreach (string item in items)
 			{
 				if (!data.Any(b => b.Name == item))
 				{
-					context.Vendors.Add(new Vendor() { Name = item });
+					Context.Vendors.Add(new Vendor() { Name = item });
 				}
 			}
-			await context.SaveChangesAsync();
+			await Context.SaveChangesAsync();
 		}
 
-		static async Task ProcessUnits(dynamic items, Context context, ILogger<ContextSeed> logger)
+		async Task ProcessUnits(dynamic items)
 		{
-			List<Unit> data = await context.Units.ToListAsync();
+			List<Unit> data = await Context.Units.ToListAsync();
 			foreach (string item in items)
 			{
 				if (!data.Any(b => b.Name == item))
 				{
-					context.Units.Add(new Unit() { Name = item });
+					Context.Units.Add(new Unit() { Name = item });
 				}
 			}
-			await context.SaveChangesAsync();
+			await Context.SaveChangesAsync();
 		}
 
-		static async Task ProcessCategories(dynamic items, Context context, ILogger<ContextSeed> logger)
+		async Task ProcessCategories(dynamic items)
 		{
-			List<Category> data = await context.Categories.ToListAsync();
+			List<Category> data = await Context.Categories.ToListAsync();
 			foreach (dynamic item in items)
 			{
 				if (!data.Any(b => b.Name == (string) item.Name))
@@ -127,25 +146,25 @@ namespace ROL.Services.Catalog.DAL
 							category.Children.Add(new Category() { Name = child.Name });
 						}
 					}
-					context.Categories.Add(category);
+					Context.Categories.Add(category);
 				}
 			}
-			int changes = await context.SaveChangesAsync();
+			int changes = await Context.SaveChangesAsync();
 		}
 
 
-		static async Task ProcessProducts(dynamic items, Context context, ILogger<ContextSeed> logger)
+		async Task ProcessProducts(dynamic items)
 		{
-			logger.LogInformation("Enterring ProcessProducts");
+			Logger.LogInformation("Enterring ProcessProducts");
 
-			List<Brand> brands = await context.Brands.ToListAsync();
-			List<Vendor> vendors = await context.Vendors.ToListAsync();
-			List<Category> categories = await context.Categories.ToListAsync();
-			List<Unit> units = await context.Units.ToListAsync();
+			List<Brand> brands = await Context.Brands.ToListAsync();
+			List<Vendor> vendors = await Context.Vendors.ToListAsync();
+			List<Category> categories = await Context.Categories.ToListAsync();
+			List<Unit> units = await Context.Units.ToListAsync();
 
 			List<ItemCategory> pcs = new List<ItemCategory>();
 
-			List<Item> data = await context.Items.ToListAsync();
+			List<Item> data = await Context.Items.ToListAsync();
 			foreach (dynamic item in items)
 			{
 				if (!data.Any(b => b.Name == (string)item.Name)) // && b.Count == (int)item.Count))
@@ -155,7 +174,7 @@ namespace ROL.Services.Catalog.DAL
 					if (brand == null)
 					{
 						string name = item.Name;
-						logger.LogError("invalid item", name);
+						Logger.LogError("invalid item", name);
 						return;
 					}
 					Item p = new Item
@@ -192,7 +211,7 @@ namespace ROL.Services.Catalog.DAL
 					}
 
 
-					await context.Items.AddAsync(p);
+					await Context.Items.AddAsync(p);
 					//					await context.SaveChangesAsync();
 
 					foreach (string category in item.Categories)
@@ -207,7 +226,7 @@ namespace ROL.Services.Catalog.DAL
 				}
 			}
 			//			await context.ProductCategories.AddRangeAsync(pcs);
-			await context.SaveChangesAsync();
+			await Context.SaveChangesAsync();
 		}
 
 	}

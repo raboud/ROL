@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Autofac;
-using Autofac.Extensions.DependencyInjection;
+//using Autofac;
+//using Autofac.Extensions.DependencyInjection;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -41,9 +41,7 @@ namespace ROL.Services.Catalog.API
 
 			services.AddAutoMapper(x => x.AddProfile(new AutoMapperProfile()));
 
-			ContainerBuilder container = new ContainerBuilder();
-			container.Populate(services);
-			return new AutofacServiceProvider(container.Build());
+			return services.BuildServiceProvider();
 
 		}
 

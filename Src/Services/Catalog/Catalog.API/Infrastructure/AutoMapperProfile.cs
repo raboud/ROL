@@ -2,6 +2,7 @@
 using ROL.Services.Catalog.API;
 using ROL.Services.Catalog.DAL;
 using ROL.Services.Catalog.Domain;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using ROL.Services.Catalog.DTO;
 using System;
@@ -22,15 +23,33 @@ namespace ROL.Services.Catalog.API.Infrastructure
 //				.ForMember(p => p.PictureUri, opt => opt.ResolveUsing<PictureUriReslover>())
 				.ForMember(p => p.Types, opt => opt.MapFrom(src => src.ItemCategories.Select(e => e.Category.Name).ToList()));
 			CreateMap<ItemDTO, Item>()
-				.ForMember(p => p.Brand, opt => opt.ResolveUsing<BrandReslover>());
+				.ForMember(p => p.Brand, opt => opt.MapFrom<BrandReslover>())
+				.ForMember(p => p.ItemCategories, opt => opt.MapFrom<ItemCategoriesResolver>());
 			CreateMap<Unit, UnitDTO>().ReverseMap();
 			CreateMap<Variant, VariantDTO>()
 				.ForMember(p => p.Unit, opt => opt.MapFrom(src => src.Unit.Name))
 				.ForMember(p => p.Vendor, opt => opt.MapFrom(src => src.Vendor.Name));
 			CreateMap<VariantDTO, Variant>()
-				.ForMember(p => p.Unit, opt => opt.ResolveUsing<UnitReslover>())
-				.ForMember(p => p.Vendor, opt => opt.ResolveUsing<VendorReslover>());
+				.ForMember(p => p.Unit, opt => opt.MapFrom<UnitReslover>())
+				.ForMember(p => p.Vendor, opt => opt.MapFrom<VendorReslover>())
+				.ForMember(p => p.ItemId, opt => opt.MapFrom<VariantResolver>());
 			CreateMap<Vendor, VendorDTO>().ReverseMap();
+		}
+	}
+
+	internal class VariantResolver : IValueResolver<VariantDTO, Variant, Guid>
+	{
+		private readonly Context _context;
+
+		public VariantResolver(Context context)
+		{
+			_context = context;
+		}
+
+		public Guid Resolve(VariantDTO source, Variant destination, Guid destMember, ResolutionContext context)
+		{
+			Variant v = _context.Variants.Find(source.Id);
+			return v.ItemId;
 		}
 	}
 
@@ -66,7 +85,7 @@ namespace ROL.Services.Catalog.API.Infrastructure
 		{
 			Unit item = _context.Units.FirstOrDefault(u => u.Name == source.Unit);
 			destination.UnitId = item.Id;
-			return null;
+			return item;
 		}
 	}
 
@@ -83,7 +102,7 @@ namespace ROL.Services.Catalog.API.Infrastructure
 		{
 			Vendor item = _context.Vendors.FirstOrDefault(u => u.Name == source.Vendor);
 			destination.VendorId = item.Id;
-			return null;
+			return item;
 		}
 	}
 
@@ -101,7 +120,29 @@ namespace ROL.Services.Catalog.API.Infrastructure
 		{
 			Brand item = _context.Brands.FirstOrDefault(u => u.Name == source.Brand);
 			destination.BrandId = item.Id;
-			return null;
+			destination.Brand = item;
+			return item;
 		}
+	}
+
+	internal class ItemCategoriesResolver : IValueResolver<ItemDTO, Item, List<ItemCategory>>
+	{
+		private readonly Context _context;
+
+		public ItemCategoriesResolver(Context context)
+		{
+			_context = context;
+		}
+
+		public List<ItemCategory> Resolve(ItemDTO source, Item destination, List<ItemCategory> destMember, ResolutionContext context)
+		{
+			List<ItemCategory> items = _context.ItemCategories.Where(u => u.ItemId == destination.Id && source.Types.Contains(u.Category.Name))
+					.Include(i => i.Category)
+//					.Include(i => i.Item)
+					.ToList();
+			destination.ItemCategories = items;
+			return items;
+		}
+
 	}
 }

@@ -1,17 +1,24 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+//using Microsoft.EntityFrameworkCore;
+//using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Serialization;
 using ROL.Services.Catalog.DAL;
 using ROL.Services.Common.API.Infrastructure.Filters;
 using Swashbuckle.AspNetCore.Swagger;
-using System;
+//using System;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Reflection;
+//using System.Data.Common;
+//using System.Reflection;
+//using HealthChecks.AzureStorage;
+//using HealthChecks.SqlServer;
+//using Microsoft.AspNetCore.HealthChecks;
+//using Microsoft.Extensions.DependencyInjection;
+//using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
+
 
 namespace ROL.Services.Catalog.API.Infrastructure
 {
@@ -37,24 +44,75 @@ namespace ROL.Services.Catalog.API.Infrastructure
 			return services;
 		}
 
+		public static IServiceCollection AddCustomHealthCheck(this IServiceCollection services, IConfiguration configuration)
+		{
+			var accountName = configuration.GetValue<string>("AzureStorageAccountName");
+			var accountKey = configuration.GetValue<string>("AzureStorageAccountKey");
+
+			var hcBuilder = services.AddHealthChecks();
+
+			hcBuilder
+				.AddCheck("self", () => HealthCheckResult.Healthy())
+				.AddSqlServer(
+					configuration["ConnectionString"],
+					name: "CatalogDB-check",
+					tags: new string[] { "catalogdb" });
+
+			if (!string.IsNullOrEmpty(accountName) && !string.IsNullOrEmpty(accountKey))
+			{
+				hcBuilder
+					.AddAzureBlobStorage(
+						$"DefaultEndpointsProtocol=https;AccountName={accountName};AccountKey={accountKey};EndpointSuffix=core.windows.net",
+						name: "catalog-storage-check",
+						tags: new string[] { "catalogstorage" });
+			}
+
+			//if (configuration.GetValue<bool>("AzureServiceBusEnabled"))
+			//{
+			//	hcBuilder
+			//		.AddAzureServiceBusTopic(
+			//			configuration["EventBusConnection"],
+			//			topicName: "eshop_event_bus",
+			//			name: "catalog-servicebus-check",
+			//			tags: new string[] { "servicebus" });
+			//}
+			//else
+			//{
+			//	hcBuilder
+			//		.AddRabbitMQ(
+			//			$"amqp://{configuration["EventBusConnection"]}",
+			//			name: "catalog-rabbitmqbus-check",
+			//			tags: new string[] { "rabbitmqbus" });
+			//}
+
+			return services;
+		}
+
 		public static IServiceCollection AddCustomMVC(this IServiceCollection services, IConfiguration configuration)
 		{
-			//services.AddHealthChecks(checks =>
-			//{
-			//	int minutes = 1;
-			//	if (int.TryParse(configuration["HealthCheck:Timeout"], out int minutesParsed))
-			//	{
-			//		minutes = minutesParsed;
-			//	}
-			//	checks.AddSqlCheck("CatalogDb", configuration["ConnectionString"], TimeSpan.FromMinutes(minutes));
+			IHealthChecksBuilder hcBuilder = services.AddHealthChecks();
 
-			//	string accountName = configuration.GetValue<string>("AzureStorageAccountName");
-			//	string accountKey = configuration.GetValue<string>("AzureStorageAccountKey");
-			//	if (!string.IsNullOrEmpty(accountName) && !string.IsNullOrEmpty(accountKey))
-			//	{
-			//		checks.AddAzureBlobStorageCheck(accountName, accountKey);
-			//	}
-			//});
+			hcBuilder
+				.AddSqlServer(configuration["ConnectionString"]);
+
+
+
+			services.AddHealthChecks(checks =>
+			{
+				//int minutes = 1;
+				//if (int.TryParse(configuration["HealthCheck:Timeout"], out int minutesParsed))
+				//{
+				//	minutes = minutesParsed;
+				//}
+				//checks.(configuration["ConnectionString"], name: "CatalogDb", , TimeSpan.FromMinutes(minutes));
+
+				//string accountName = configuration.GetValue<string>("AzureStorageAccountName");
+				//string accountKey = configuration.GetValue<string>("AzureStorageAccountKey");
+				//if (!string.IsNullOrEmpty(accountName) && !string.IsNullOrEmpty(accountKey))
+				//{
+				//	checks.AddAzureBlobStorage(accountName, accountKey);
+				//}
+			});
 
 			services.AddMvc(options =>
 			{
@@ -88,7 +146,7 @@ namespace ROL.Services.Catalog.API.Infrastructure
 		{
 			services.AddDbContext<Context>(options =>
 			{
-				options.ConfigureFromSettings(configuration);
+				options.ConfigureFromSettings<Context>(configuration);
 			});
 
 			//services.AddDbContext<IntegrationEventLogContext>(options =>

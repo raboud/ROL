@@ -1,13 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 
 namespace ROL.Services.Catalog.Domain
 {
-	public class MetaDataEntity
+	public class MetaDataEntity: IEquatable<MetaDataEntity>, ICloneable
 	{
-		public Dictionary<string, string> MetaData { get; set; }
+		public Dictionary<string, string> MetaData { get; set; } = new Dictionary<string, string>();
 		public MetaDataEntity()
 		{
-			MetaData = new Dictionary<string, string>();
+		}
+
+		public bool Equals(MetaDataEntity other)
+		{
+			throw new NotImplementedException();
+		}
+
+		public object Clone()
+		{
+			return JsonConvert.DeserializeObject<MetaDataEntity>(this.ToString());
 		}
 	}
 }
