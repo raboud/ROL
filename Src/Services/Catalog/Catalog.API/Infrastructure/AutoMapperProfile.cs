@@ -23,8 +23,8 @@ namespace ROL.Services.Catalog.API.Infrastructure
 //				.ForMember(p => p.PictureUri, opt => opt.ResolveUsing<PictureUriReslover>())
 				.ForMember(p => p.Types, opt => opt.MapFrom(src => src.ItemCategories.Select(e => e.Category.Name).ToList()));
 			CreateMap<ItemDTO, Item>()
-				.ForMember(p => p.Brand, opt => opt.MapFrom<BrandReslover>())
-				.ForMember(p => p.ItemCategories, opt => opt.MapFrom<ItemCategoriesResolver>());
+				.ForMember(p => p.Brand, opt => opt.MapFrom<ItemResolver>())
+				.ForMember(p => p.ItemCategories, opt => opt.MapFrom<ItemResolver>());
 			CreateMap<Unit, UnitDTO>().ReverseMap();
 			CreateMap<Variant, VariantDTO>()
 				.ForMember(p => p.Unit, opt => opt.MapFrom(src => src.Unit.Name))
@@ -125,11 +125,11 @@ namespace ROL.Services.Catalog.API.Infrastructure
 		}
 	}
 
-	internal class ItemCategoriesResolver : IValueResolver<ItemDTO, Item, List<ItemCategory>>
+	internal class ItemResolver : IValueResolver<ItemDTO, Item, List<ItemCategory>>, IValueResolver<ItemDTO, Item, Brand>
 	{
 		private readonly Context _context;
 
-		public ItemCategoriesResolver(Context context)
+		public ItemResolver(Context context)
 		{
 			_context = context;
 		}
@@ -142,6 +142,13 @@ namespace ROL.Services.Catalog.API.Infrastructure
 					.ToList();
 			destination.ItemCategories = items;
 			return items;
+		}
+		public Brand Resolve(ItemDTO source, Item destination, Brand destMember, ResolutionContext context)
+		{
+			Brand item = _context.Brands.FirstOrDefault(u => u.Name == source.Brand);
+			destination.BrandId = item.Id;
+			destination.Brand = item;
+			return item;
 		}
 
 	}
