@@ -14,9 +14,6 @@ jobs:
       with:
         dotnet-version: 3.0.100
     - name: Build with dotnet
-      run: dotnet build --configuration Release ROL.sln
-
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      run: dotnet test ROL.sln
+      run: 
+        dotnet build --configuration Release ROL.sln
+        dotnet test ROL.sln
