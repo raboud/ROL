@@ -15,10 +15,10 @@ namespace ROL.Services.Catalog.API.Controllers
 	[ResponseCache(Duration = 3600)]
 	public class PicController : Controller
     {
-        private readonly IHostingEnvironment _env;
+        private readonly IWebHostEnvironment _env;
         private readonly Context _catalogContext;
 
-        public PicController(IHostingEnvironment env,
+        public PicController(IWebHostEnvironment env,
             Context catalogContext)
         {
             _env = env;

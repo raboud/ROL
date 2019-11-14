@@ -22,12 +22,12 @@ namespace ROL.Services.Catalog.API
 			CreateWebHostBuilder(args).Build()
 				.MigrateDbContext<Context>((context, services) =>
 				{
-					IHostingEnvironment env = services.GetService<IHostingEnvironment>();
+					IWebHostEnvironment env = services.GetService<IWebHostEnvironment>();
 					IOptions<Settings> settings = services.GetService<IOptions<Settings>>();
 					ILogger<ContextSeed> logger = services.GetService<ILogger<ContextSeed>>();
 
 					new ContextSeed()
-					.SeedAsync(context, env, settings, logger)
+					.SeedAsync(context, env.ContentRootPath, env.WebRootPath, settings, logger)
 					.Wait();
 
 				})

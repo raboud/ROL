@@ -23,13 +23,13 @@ namespace ROL.Services.Catalog.DAL
 		public string PicturePath { get; set; }
 		public bool UseCustomizationData { get; set; } = false;
 
-		public Task SeedAsync(Context context, IHostingEnvironment env, IOptions<Settings> settings, ILogger<ContextSeed> logger)
+		public Task SeedAsync(Context context, string contentRootPath, string webRootPath, IOptions<Settings> settings, ILogger<ContextSeed> logger)
 		{
 			this.Context = context;
 			this.Logger = logger;
 			UseCustomizationData = settings.Value.UseCustomizationData;
-			ContentRootPath = env.ContentRootPath;
-			PicturePath = env.WebRootPath;
+			ContentRootPath = contentRootPath;
+			PicturePath = webRootPath;
 			return SeedAsync();
 		}
 
