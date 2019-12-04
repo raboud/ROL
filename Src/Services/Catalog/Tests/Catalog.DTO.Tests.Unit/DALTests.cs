@@ -162,7 +162,9 @@ namespace Catalog.DTO.Tests.Unit
 				item.MetaData.Add("Test1", "1");
 				item.MetaData.Add("Test2", "2");
 				item.MetaData.Add("Test3", "3");
+//				context.ChangeTracker.DetectChanges();
 				//				context.Items.Update(item);
+				Assert.True(context.Entry(item).Property(p => p.MetaData).IsModified, "Property is modified");
 				Assert.Equal(EntityState.Modified, context.Entry(item).State);
 				int changes = await context.SaveChangesAsync();
 				Assert.Equal(EntityState.Unchanged, context.Entry(item).State);
