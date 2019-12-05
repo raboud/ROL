@@ -365,6 +365,7 @@ namespace Catalog.DTO.Tests.Unit
 		}
 	}
 
+	// help
 	public class DatabaseFixture : IDisposable
 	{
 		public ServiceProvider serviceProvider { get; set; }
