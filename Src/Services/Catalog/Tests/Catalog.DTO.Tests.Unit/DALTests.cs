@@ -397,6 +397,7 @@ namespace Catalog.DTO.Tests.Unit
 
 		}
 
+
 		private void ConfigureServices(IServiceCollection services)
 		{
 			services.AddLogging(loggingBuilder =>
