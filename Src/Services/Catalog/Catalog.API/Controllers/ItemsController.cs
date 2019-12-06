@@ -3,6 +3,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using ROL.Services.Catalog.DAL;
 //using Catalog.API.IntegrationEvents;
 using ROL.Services.Catalog.Domain;
@@ -21,20 +22,25 @@ namespace ROL.Services.Catalog.API.Controllers
 	public class ItemsController : Controller
     {
         private readonly Context _context;
-//		private readonly ICatalogIntegrationEventService _catalogIntegrationEventService;
+		private readonly ILogger<ItemsController> _logger;
+
+		//		private readonly ICatalogIntegrationEventService _catalogIntegrationEventService;
 		private readonly IMapper _mapper;
 
 		public ItemsController(
 			Context context, 
+			ILogger<ItemsController> logger,
 //			ICatalogIntegrationEventService catalogIntegrationEventService,
 			IMapper mapper)
         {
-			_context = context ?? throw new ArgumentNullException(nameof(context));
-//			_catalogIntegrationEventService = catalogIntegrationEventService ?? throw new ArgumentNullException(nameof(catalogIntegrationEventService));
+			this._context = context ?? throw new ArgumentNullException(nameof(context));
+			this._logger = logger ?? throw new ArgumentNullException(nameof(logger));
+
+			//			_catalogIntegrationEventService = catalogIntegrationEventService ?? throw new ArgumentNullException(nameof(catalogIntegrationEventService));
 
 			((DbContext)context).ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
-			_mapper = mapper;
+			this._mapper = mapper;
 		}
 
 		// GET: api/Products
@@ -153,11 +159,6 @@ namespace ROL.Services.Catalog.API.Controllers
 		[ProducesResponseType(typeof(ItemDTO), (int)HttpStatusCode.OK)]
 		public async Task<IActionResult> GetProduct([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
 			if (id == null)
 			{
 				return BadRequest();
@@ -180,11 +181,6 @@ namespace ROL.Services.Catalog.API.Controllers
 		[ProducesResponseType((int)HttpStatusCode.Created)]
 		public async Task<IActionResult> PutProduct([FromRoute] Guid id, [FromBody] ItemDTO product)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             if (id != product.Id)
             {
                 return BadRequest();
@@ -260,7 +256,7 @@ namespace ROL.Services.Catalog.API.Controllers
 				}
 				catch (Exception e)
 				{
-
+					this._logger.LogCritical(e, "Error in PutProduct");
 				}
 			}
             catch (DbUpdateConcurrencyException)
@@ -284,18 +280,14 @@ namespace ROL.Services.Catalog.API.Controllers
 		[ProducesResponseType((int)HttpStatusCode.Created)]
 		public async Task<IActionResult> PostProduct([FromBody] ItemDTO product)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 			Item p2 = _mapper.Map<Item>(product);
 
 			QueryTrackingBehavior initialState = _context.ChangeTracker.QueryTrackingBehavior;
 			_context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
 
 			_context.Items.Add(p2);
-            int changes = await _context.SaveChangesAsync();
-			_context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
+            await _context.SaveChangesAsync();
+			_context.ChangeTracker.QueryTrackingBehavior = initialState;
 
 			return CreatedAtAction("GetProduct", new { id = p2.Id }, _mapper.Map<ItemDTO>(p2));
         }
@@ -306,11 +298,6 @@ namespace ROL.Services.Catalog.API.Controllers
 		[ProducesResponseType((int)HttpStatusCode.NoContent)]
 		public async Task<IActionResult> DeleteProduct([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
 			Item item = await _context.Items.SingleOrDefaultAsync(m => m.Id == id);
 			if (item == null)
 			{

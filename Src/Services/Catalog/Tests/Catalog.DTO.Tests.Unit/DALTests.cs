@@ -11,7 +11,6 @@ using ROL.Services.Catalog.DTO;
 //using ROL.Services.Catalog.DTO;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Xunit;
 
@@ -19,9 +18,9 @@ namespace Catalog.DTO.Tests.Unit
 {
 	public class DALTests : IClassFixture<DatabaseFixture>
 	{
-		private IConfiguration _config => fixture.Config;
+		private IConfiguration Config => fixture.Config;
 
-		private DatabaseFixture fixture;
+		private readonly DatabaseFixture fixture;
 
 		public DALTests(DatabaseFixture fixture)
 		{
@@ -31,18 +30,14 @@ namespace Catalog.DTO.Tests.Unit
 		[Fact]
 		public async void Speed1()
 		{
-			using (Context context = Context.ContextDesignFactory.CreateDbContext(_config))
+			using (Context context = Context.ContextDesignFactory.CreateDbContext(Config))
 			{
 				ILogger<ContextSeed> logger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<ContextSeed>();
-				//				LoggerFactory loggerFactory = new LoggerFactory();
-				//				ILogger<ContextSeed> logger = loggerFactory.AddConsole().CreateLogger<ContextSeed>();
-
 				ContextSeed seed = new ContextSeed();
-
 				await seed.SeedAsync(context, logger, false, Environment.CurrentDirectory, "");
-
 			}
-			using (Context context = Context.ContextDesignFactory.CreateDbContext(_config))
+
+			using (Context context = Context.ContextDesignFactory.CreateDbContext(Config))
 			{
 				List<Brand> brands = await context.Brands.AsTracking().ToListAsync();
 				List<Vendor> vendors = await context.Vendors.AsTracking().ToListAsync();
@@ -62,21 +57,18 @@ namespace Catalog.DTO.Tests.Unit
 				await context.Database.EnsureDeletedAsync();
 			}
 		}
+
 		[Fact]
 		public async void Speed2()
 		{
-			using (Context context = Context.ContextDesignFactory.CreateDbContext(_config))
+			using (Context context = Context.ContextDesignFactory.CreateDbContext(Config))
 			{
 				ILogger<ContextSeed> logger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<ContextSeed>();
-				//				LoggerFactory loggerFactory = new LoggerFactory();
-				//				ILogger<ContextSeed> logger = loggerFactory.AddConsole().CreateLogger<ContextSeed>();
-
 				ContextSeed seed = new ContextSeed();
-
 				await seed.SeedAsync(context, logger, false, Environment.CurrentDirectory, "");
-
 			}
-			using (Context context = Context.ContextDesignFactory.CreateDbContext(_config))
+
+			using (Context context = Context.ContextDesignFactory.CreateDbContext(Config))
 			{
 				List<Item> item = await context.Items.AsTracking()
 					.Include(i => i.Brand)
@@ -100,18 +92,14 @@ namespace Catalog.DTO.Tests.Unit
 		[Fact]
 		public async void Speed3()
 		{
-			using (Context context = Context.ContextDesignFactory.CreateDbContext(_config))
+			using (Context context = Context.ContextDesignFactory.CreateDbContext(Config))
 			{
 				ILogger<ContextSeed> logger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<ContextSeed>();
-				//				LoggerFactory loggerFactory = new LoggerFactory();
-				//				ILogger<ContextSeed> logger = loggerFactory.AddConsole().CreateLogger<ContextSeed>();
-
 				ContextSeed seed = new ContextSeed();
-
 				await seed.SeedAsync(context, logger, false, Environment.CurrentDirectory, "");
-
 			}
-			using (Context context = Context.ContextDesignFactory.CreateDbContext(_config))
+
+			using (Context context = Context.ContextDesignFactory.CreateDbContext(Config))
 			{
 				List<Brand> brands = await context.Brands.AsTracking().ToListAsync();
 				List<Vendor> vendors = await context.Vendors.AsTracking().ToListAsync();
@@ -135,18 +123,14 @@ namespace Catalog.DTO.Tests.Unit
 		[Fact]
 		public async void MetaDataTest()
 		{
-			using (Context context = Context.ContextDesignFactory.CreateDbContext(_config))
+			using (Context context = Context.ContextDesignFactory.CreateDbContext(Config))
 			{
 				ILogger<ContextSeed> logger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<ContextSeed>();
-				//				LoggerFactory loggerFactory = new LoggerFactory();
-				//				ILogger<ContextSeed> logger = loggerFactory.AddConsole().CreateLogger<ContextSeed>();
-
 				ContextSeed seed = new ContextSeed();
-
 				await seed.SeedAsync(context, logger, false, Environment.CurrentDirectory, "");
-
 			}
-			using (Context context = Context.ContextDesignFactory.CreateDbContext(_config))
+
+			using (Context context = Context.ContextDesignFactory.CreateDbContext(Config))
 			{
 				List<Brand> brands = await context.Brands.AsTracking().ToListAsync();
 				List<Vendor> vendors = await context.Vendors.AsTracking().ToListAsync();
@@ -162,15 +146,14 @@ namespace Catalog.DTO.Tests.Unit
 				item.MetaData.Add("Test1", "1");
 				item.MetaData.Add("Test2", "2");
 				item.MetaData.Add("Test3", "3");
-//				context.ChangeTracker.DetectChanges();
-				//				context.Items.Update(item);
+
 				Assert.True(context.Entry(item).Property(p => p.MetaData).IsModified, "Property is modified");
 				Assert.Equal(EntityState.Modified, context.Entry(item).State);
 				int changes = await context.SaveChangesAsync();
 				Assert.Equal(EntityState.Unchanged, context.Entry(item).State);
 			}
 
-			using (Context context2 = Context.ContextDesignFactory.CreateDbContext(_config))
+			using (Context context2 = Context.ContextDesignFactory.CreateDbContext(Config))
 			{
 				List<Brand> brands = await context2.Brands.AsTracking().ToListAsync();
 				List<Vendor> vendors = await context2.Vendors.AsTracking().ToListAsync();
@@ -193,18 +176,14 @@ namespace Catalog.DTO.Tests.Unit
 		[Fact]
 		public async void MetaDataTest2()
 		{
-			using (Context context = Context.ContextDesignFactory.CreateDbContext(_config))
+			using (Context context = Context.ContextDesignFactory.CreateDbContext(Config))
 			{
 				ILogger<ContextSeed> logger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<ContextSeed>();
-				//				LoggerFactory loggerFactory = new LoggerFactory();
-				//				ILogger<ContextSeed> logger = loggerFactory.AddConsole().CreateLogger<ContextSeed>();
-
 				ContextSeed seed = new ContextSeed();
-
 				await seed.SeedAsync(context, logger, false, Environment.CurrentDirectory, "");
-
 			}
-			using (Context context = Context.ContextDesignFactory.CreateDbContext(_config))
+
+			using (Context context = Context.ContextDesignFactory.CreateDbContext(Config))
 			{
 
 				Item item = await context.Items.AsTracking()
@@ -221,14 +200,13 @@ namespace Catalog.DTO.Tests.Unit
 				item.MetaData.Add("Test1", "1");
 				item.MetaData.Add("Test2", "2");
 				item.MetaData.Add("Test3", "3");
-				context.ChangeTracker.DetectChanges();
 				Assert.Equal(EntityState.Modified, context.Entry(item).State);
 				int changes = await context.SaveChangesAsync();
 				Assert.Equal(1, changes);
 				Assert.Equal(EntityState.Unchanged, context.Entry(item).State);
 			}
 
-			using (Context context2 = Context.ContextDesignFactory.CreateDbContext(_config))
+			using (Context context2 = Context.ContextDesignFactory.CreateDbContext(Config))
 			{
 				Item item2 = await context2.Items
 					.Include(i => i.Brand)
@@ -249,30 +227,142 @@ namespace Catalog.DTO.Tests.Unit
 		}
 
 		[Fact]
-		public async void NoTrackingTest()
+		public async void MetaDataTest3()
 		{
-			using (Context context = Context.ContextDesignFactory.CreateDbContext(_config))
+			using (Context context = Context.ContextDesignFactory.CreateDbContext(Config))
 			{
 				ILogger<ContextSeed> logger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<ContextSeed>();
-				//				LoggerFactory loggerFactory = new LoggerFactory();
-				//				ILogger<ContextSeed> logger = loggerFactory.AddConsole().CreateLogger<ContextSeed>();
-
 				ContextSeed seed = new ContextSeed();
+				await seed.SeedAsync(context, logger, false, Environment.CurrentDirectory, "");
+			}
 
+			using (Context context = Context.ContextDesignFactory.CreateDbContext(Config))
+			{
+				Item item = await context.Items.AsTracking()
+					.Include(i => i.Brand)
+					.Include(i => i.ItemCategories)
+						.ThenInclude(t => t.Category)
+					.Include(i => i.Variants)
+						.ThenInclude(v => v.Vendor)
+					.Include(i => i.Variants)
+						.ThenInclude(v => v.Unit)
+					.Where(i => i.Name == "5-MTHF")
+					.FirstOrDefaultAsync();
+				Assert.Empty(item.MetaData);
+				Assert.Equal(EntityState.Unchanged, context.Entry(item).State);
+				int changes = await context.SaveChangesAsync();
+				Assert.Equal(0, changes);
+				Assert.Equal(EntityState.Unchanged, context.Entry(item).State);
+			}
+
+			using (Context context2 = Context.ContextDesignFactory.CreateDbContext(Config))
+			{
+				Item item2 = await context2.Items
+					.Include(i => i.Brand)
+					.Include(i => i.ItemCategories)
+						.ThenInclude(t => t.Category)
+					.Include(i => i.Variants)
+						.ThenInclude(v => v.Vendor)
+					.Include(i => i.Variants)
+						.ThenInclude(v => v.Unit)
+					.Where(i => i.Name == "5-MTHF")
+					.FirstOrDefaultAsync();
+				Assert.Empty(item2.MetaData);
+				await context2.Database.EnsureDeletedAsync();
+			}
+		}
+
+		class person
+		{
+			public string FirstName { get; set; }
+			public string MiddleName { get; set; }
+			public string LastName { get; set; }
+		}
+
+		[Fact]
+		public async void MetaDataTest4()
+		{
+			using (Context context = Context.ContextDesignFactory.CreateDbContext(Config))
+			{
+				ILogger<ContextSeed> logger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<ContextSeed>();
+				ContextSeed seed = new ContextSeed();
+				await seed.SeedAsync(context, logger, false, Environment.CurrentDirectory, "");
+			}
+
+			using (Context context = Context.ContextDesignFactory.CreateDbContext(Config))
+			{
+
+				Item item = await context.Items.AsTracking()
+					.Include(i => i.Brand)
+					.Include(i => i.ItemCategories)
+						.ThenInclude(t => t.Category)
+					.Include(i => i.Variants)
+						.ThenInclude(v => v.Vendor)
+					.Include(i => i.Variants)
+						.ThenInclude(v => v.Unit)
+					.Where(i => i.Name == "5-MTHF")
+					.FirstOrDefaultAsync();
+				Assert.Empty(item.MetaData);
+				item.MetaData.Add("Test1", "1");
+				item.MetaData.Add("Test2", new List<string> { "Test", "this" });
+				item.MetaData.Add("Test3", new person { FirstName = "Robert", LastName = "Raboud", MiddleName = "Alfred" });
+
+				Assert.Equal(EntityState.Modified, context.Entry(item).State);
+				int changes = await context.SaveChangesAsync();
+				Assert.Equal(1, changes);
+				Assert.Equal(EntityState.Unchanged, context.Entry(item).State);
+			}
+
+			using (Context context2 = Context.ContextDesignFactory.CreateDbContext(Config))
+			{
+				Item item2 = await context2.Items
+					.Include(i => i.Brand)
+					.Include(i => i.ItemCategories)
+						.ThenInclude(t => t.Category)
+					.Include(i => i.Variants)
+						.ThenInclude(v => v.Vendor)
+					.Include(i => i.Variants)
+						.ThenInclude(v => v.Unit)
+					.Where(i => i.Name == "5-MTHF")
+					.FirstOrDefaultAsync();
+				Assert.Equal("1", item2.MetaData["Test1"]);
+
+				List<string> list = item2.MetaData["Test2"] as List<string>;
+				Assert.NotNull(list);
+				Assert.NotEmpty(list);
+				Assert.Equal("Test", list[0]);
+				Assert.Equal("this", list[1]);
+
+				person person = item2.MetaData["Test3"] as person;
+				Assert.Equal("Robert", person.FirstName);
+				Assert.Equal("Alfred", person.MiddleName);
+				Assert.Equal("Raboud", person.LastName);
+
+				await context2.Database.EnsureDeletedAsync();
+			}
+		}
+
+		[Fact]
+		public async void NoTrackingTest()
+		{
+			using (Context context = Context.ContextDesignFactory.CreateDbContext(Config))
+			{
+				ILogger<ContextSeed> logger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<ContextSeed>();
+				ContextSeed seed = new ContextSeed();
 				await seed.SeedAsync(context, logger, false, Environment.CurrentDirectory, "");
 
 				Item item = await context.Items.AsTracking().Where(i => i.Name == "5-MTHF").FirstOrDefaultAsync();
 				Assert.Empty(item.MetaData);
 				item.Name += " - updated";
 
-				context.Items.Update(item);
 				Assert.Equal(EntityState.Modified, context.Entry(item).State);
 
 				int changes = await context.SaveChangesAsync();
 				Assert.Equal(1, changes);
 				Assert.Equal(EntityState.Unchanged, context.Entry(item).State);
 			}
-			using (Context context2 = Context.ContextDesignFactory.CreateDbContext(_config))
+
+			using (Context context2 = Context.ContextDesignFactory.CreateDbContext(Config))
 			{
 				Item item2 = await context2.Items.Where(i => i.Name == "5-MTHF - updated").FirstOrDefaultAsync();
 				Assert.NotNull(item2);
@@ -283,29 +373,38 @@ namespace Catalog.DTO.Tests.Unit
 		[Fact]
 		public async void NoTrackingTest2()
 		{
-			using (Context context = Context.ContextDesignFactory.CreateDbContext(_config))
+			Item item = null;
+			int count = 0;
+			using (Context context = Context.ContextDesignFactory.CreateDbContext(Config))
 			{
 				ILogger<ContextSeed> logger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<ContextSeed>();
-				//				LoggerFactory loggerFactory = new LoggerFactory();
-				//				ILogger<ContextSeed> logger = loggerFactory.AddConsole().CreateLogger<ContextSeed>();
-
 				ContextSeed seed = new ContextSeed();
-
 				await seed.SeedAsync(context, logger, false, Environment.CurrentDirectory, "");
 
-				Item item = await context.Items.Where(i => i.Name == "5-MTHF").FirstOrDefaultAsync();
-				//				Assert.Empty(item.MetaData);
+				item = await context.Items.Where(i => i.Name == "5-MTHF").FirstOrDefaultAsync();
 				item.Name += " - updated2";
-
-				context.Entry(item).State = EntityState.Detached;
-				Assert.Throws<InvalidOperationException>(() => context.Items.Update(item));
+				//				context.Update<Item>(item);
 				int changes = await context.SaveChangesAsync();
 				Assert.Equal(0, changes);
+				count = context.Items.Count();
 			}
-			using (Context context2 = Context.ContextDesignFactory.CreateDbContext(_config))
+
+
+			using (Context context = Context.ContextDesignFactory.CreateDbContext(Config))
+			{
+//				item.Name += " - updated2";
+				context.Update<Item>(item);
+//				context.Entry(item).State = EntityState.Modified;
+//				Assert.Throws<InvalidOperationException>(() => context.Items.Update(item));
+				int changes = await context.SaveChangesAsync();
+				Assert.Equal(1, changes);
+			}
+
+			using (Context context2 = Context.ContextDesignFactory.CreateDbContext(Config))
 			{
 				Item item2 = await context2.Items.Where(i => i.Name == "5-MTHF - updated2").FirstOrDefaultAsync();
-				Assert.Null(item2);
+				Assert.NotNull(item2);
+				Assert.Equal(count, context2.Items.Count());
 				await context2.Database.EnsureDeletedAsync();
 			}
 		}
@@ -331,7 +430,6 @@ namespace Catalog.DTO.Tests.Unit
 			.ToListAsync();
 
 			List<ItemDTO> dto = mapper.Map<List<ItemDTO>>(items);
-
 			List<Item> itmes2 = mapper.Map<List<Item>>(dto);
 		}
 
@@ -353,7 +451,6 @@ namespace Catalog.DTO.Tests.Unit
 					.ThenInclude(v => v.Unit)
 				.OrderBy(b => b.Name);
 			Item items = await query.FirstOrDefaultAsync();
-//			.ToListAsync();
 
 			ItemDTO dto = mapper.Map<ItemDTO>(items);
 
@@ -364,118 +461,4 @@ namespace Catalog.DTO.Tests.Unit
 			Assert.Equal(expected, actual);
 		}
 	}
-
-	// help
-	public class DatabaseFixture : IDisposable
-	{
-		public ServiceProvider serviceProvider { get; set; }
-
-		public Context Context { get; set; }
-		public IConfiguration Config { get; set; }
-		//		public IContainer Container { get; set; }
-
-		private const string TestSuffixConvention = "Tests";
-
-		public DatabaseFixture()
-		{
-			ServiceCollection serviceCollection = new ServiceCollection();
-			ConfigureServices(serviceCollection);
-			this.serviceProvider = serviceCollection.BuildServiceProvider();
-
-			Config = new ConfigurationBuilder()
-						  .SetBasePath(Directory.GetCurrentDirectory())
-						  .AddJsonFile("appsettings.json", false)
-						  .Build();
-
-			Context = this.serviceProvider.GetService<Context>(); // Context.ContextDesignFactory.CreateDbContext(Config);
-			ILogger<ContextSeed> logger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<ContextSeed>();
-			//				LoggerFactory loggerFactory = new LoggerFactory();
-			//				ILogger<ContextSeed> logger = loggerFactory.AddConsole().CreateLogger<ContextSeed>();
-
-			ContextSeed seed = new ContextSeed();
-
-			seed.SeedAsync(Context, logger, false, Environment.CurrentDirectory, "").Wait();
-
-		}
-
-
-		private void ConfigureServices(IServiceCollection services)
-		{
-			services.AddLogging(loggingBuilder =>
-			{
-				loggingBuilder.AddConsole();
-				loggingBuilder.AddDebug();
-			});
-
-			// add logging
-			services.AddLogging();
-
-			// build configuration
-
-			services.AddDbContext<Context>(options =>
-			{
-				options.ConfigureFromSettings<Context>(Config);
-			});
-
-            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies().Where(a => (!a.FullName.StartsWith("Microsoft.")))
-                .OrderByDescending(x => x.FullName));
-
-            //ContainerBuilder container = new ContainerBuilder();
-            //container.Populate(services);
-            //return new AutofacServiceProvider(container.Build());
-
-
-
-        }
-
-
-
-        #region IDisposable Support
-        private bool disposedValue = false; // To detect redundant calls
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing)
-                {
-                    //			Container.Dispose();
-                    Context.Dispose();
-                    serviceProvider.Dispose();
-                }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
-
-                disposedValue = true;
-            }
-        }
-
-        // TODO: override a finalizer only if Dispose(bool disposing) above has code to free unmanaged resources.
-        // ~DatabaseFixture()
-        // {
-        //   // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-        //   Dispose(false);
-        // }
-
-        // This code added to correctly implement the disposable pattern.
-        public void Dispose()
-        {
-            // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
-            Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
-            // GC.SuppressFinalize(this);
-        }
-        #endregion
-
-    }
-
-    public class Foo
-	{
-		public Foo(IConfiguration config)
-		{
-
-		}
-	}
-
 }

@@ -12,17 +12,13 @@ namespace ROL.Services.Catalog.DAL.EntityConfigurations
 	{
 		virtual public void Configure(EntityTypeBuilder<TEntity> builder)
 		{
-			ValueConverter<Dictionary<string, string>, string> converter = new ValueConverter<Dictionary<string, string>, string>(
-				v => JsonConvert.SerializeObject(v, Formatting.None),
-				v => JsonConvert.DeserializeObject<Dictionary<string, string>>(v));
-
 			builder.Property(i => i.MetaData)
-				.HasJsonConversion<Dictionary<string, string>>()
+				.HasJsonConversion<Dictionary<string, object>>()
 				.IsRequired();
 		}
 	}
 
-	public static class ValueConversionExtensions
+	public static class PropertyBuilderExtensions
 	{
 		public static PropertyBuilder<T> HasJsonConversion<T>(this PropertyBuilder<T> propertyBuilder) where T : class, new()
 		{

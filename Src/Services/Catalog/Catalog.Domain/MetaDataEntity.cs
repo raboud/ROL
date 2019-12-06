@@ -6,7 +6,7 @@ namespace ROL.Services.Catalog.Domain
 {
 	public class MetaDataEntity: IEquatable<MetaDataEntity>, ICloneable
 	{
-		virtual public Dictionary<string, string> MetaData { get; set; } = new Dictionary<string, string>();
+		public Dictionary<string, object> MetaData { get; set; } = new Dictionary<string, object>();
 		public MetaDataEntity()
 		{
 		}

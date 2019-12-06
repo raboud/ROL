@@ -78,11 +78,6 @@ namespace ROL.Services.Catalog.API.Controllers
 		[ProducesResponseType(typeof(Vendor), (int)HttpStatusCode.OK)]
 		public async Task<IActionResult> GetVendor([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
 			Vendor vendor = await _context.Vendors.SingleOrDefaultAsync(m => m.Id == id);
 
             if (vendor == null)
@@ -100,11 +95,6 @@ namespace ROL.Services.Catalog.API.Controllers
 		[ProducesResponseType((int)HttpStatusCode.Created)]
 		public async Task<IActionResult> PutVendor([FromRoute] Guid id, [FromBody] VendorDTO vendor)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             if (id != vendor.Id)
             {
                 return BadRequest();
@@ -137,11 +127,6 @@ namespace ROL.Services.Catalog.API.Controllers
 		[ProducesResponseType((int)HttpStatusCode.Created)]
 		public async Task<IActionResult> PostVendor([FromBody] VendorDTO vendor)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             _context.Vendors.Add(_mapper.Map<Vendor>(vendor));
             await _context.SaveChangesAsync();
 
@@ -154,11 +139,6 @@ namespace ROL.Services.Catalog.API.Controllers
 		[ProducesResponseType((int)HttpStatusCode.NoContent)]
 		public async Task<IActionResult> DeleteVendor([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
 			Vendor item = await _context.Vendors.SingleOrDefaultAsync(m => m.Id == id);
 			if (item == null)
 			{

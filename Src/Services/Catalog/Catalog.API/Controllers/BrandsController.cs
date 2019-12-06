@@ -89,11 +89,6 @@ namespace ROL.Services.Catalog.API.Controllers
 		[ProducesResponseType(typeof(BrandDTO), (int)HttpStatusCode.OK)]
 		public async Task<IActionResult> GetBrand([FromRoute] Guid id)
 		{
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
-
 			Brand brand = await _context.Brands.SingleOrDefaultAsync(m => m.Id == id);
 
 			if (brand == null)
@@ -111,11 +106,6 @@ namespace ROL.Services.Catalog.API.Controllers
 		[ProducesResponseType((int)HttpStatusCode.Created)]
 		public async Task<IActionResult> PutBrand([FromRoute] Guid id, [FromBody] BrandDTO brand)
 		{
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
-
 			if (id != brand.Id)
 			{
 				return BadRequest();
@@ -148,11 +138,6 @@ namespace ROL.Services.Catalog.API.Controllers
 		[ProducesResponseType((int)HttpStatusCode.Created)]
 		public async Task<IActionResult> PostBrand([FromBody] BrandDTO brand)
 		{
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
-
 			_context.Brands.Add(_mapper.Map<Brand>(brand));
 			await _context.SaveChangesAsync();
 
@@ -165,12 +150,6 @@ namespace ROL.Services.Catalog.API.Controllers
 		[ProducesResponseType((int)HttpStatusCode.NoContent)]
 		public async Task<IActionResult> DeleteBrand([FromRoute] Guid id)
 		{
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
-
-
 			Brand item = await _context.Brands.SingleOrDefaultAsync(m => m.Id == id);
 			if (item == null)
 			{

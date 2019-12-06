@@ -77,11 +77,6 @@ namespace ROL.Services.Catalog.API.Controllers
 		[ProducesResponseType(typeof(CategoryDTO), (int)HttpStatusCode.OK)]
 		public async Task<IActionResult> GetCategory([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
 			Category category = await _context.Categories.SingleOrDefaultAsync(m => m.Id == id);
 
             if (category == null)
@@ -99,11 +94,6 @@ namespace ROL.Services.Catalog.API.Controllers
 		[ProducesResponseType((int)HttpStatusCode.Created)]
 		public async Task<IActionResult> PutCategory([FromRoute] Guid id, [FromBody] CategoryDTO item)
         {
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
-
 			if (id != item.Id)
 			{
 				return BadRequest();
@@ -136,11 +126,6 @@ namespace ROL.Services.Catalog.API.Controllers
 		[ProducesResponseType((int)HttpStatusCode.Created)]
 		public async Task<IActionResult> PostCategory([FromBody] CategoryDTO category)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             _context.Categories.Add(_mapper.Map<Category>(category));
             await _context.SaveChangesAsync();
 
@@ -153,11 +138,6 @@ namespace ROL.Services.Catalog.API.Controllers
 		[ProducesResponseType((int)HttpStatusCode.NoContent)]
 		public async Task<IActionResult> DeleteCategory([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
 			Category item = await _context.Categories.SingleOrDefaultAsync(m => m.Id == id);
             if (item == null)
             {

@@ -77,11 +77,6 @@ namespace ROL.Services.Catalog.API.Controllers
 		[ProducesResponseType(typeof(UnitDTO), (int)HttpStatusCode.OK)]
 		public async Task<IActionResult> GetUnit([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
 			Unit item = await _context.Units.SingleOrDefaultAsync(m => m.Id == id);
 			if (item == null)
 			{
@@ -98,11 +93,6 @@ namespace ROL.Services.Catalog.API.Controllers
 		[ProducesResponseType((int)HttpStatusCode.Created)]
 		public async Task<IActionResult> PutUnit([FromRoute] Guid id, [FromBody] UnitDTO item)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             if (id != item.Id)
             {
                 return BadRequest();
@@ -134,11 +124,6 @@ namespace ROL.Services.Catalog.API.Controllers
 		[ProducesResponseType((int)HttpStatusCode.Created)]
 		public async Task<IActionResult> PostUnit([FromBody] UnitDTO unit)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
             _context.Units.Add(_mapper.Map<Unit>(unit));
             await _context.SaveChangesAsync();
 
@@ -151,11 +136,6 @@ namespace ROL.Services.Catalog.API.Controllers
 		[ProducesResponseType((int)HttpStatusCode.NoContent)]
 		public async Task<IActionResult> DeleteUnit([FromRoute] Guid id)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
-
 			Unit item = await _context.Units.SingleOrDefaultAsync(m => m.Id == id);
 			if (item == null)
 			{
