@@ -17,8 +17,6 @@ namespace Catalog.DTO.Tests.Unit
 
 		public Context Context { get; set; }
 		public IConfiguration Config { get; set; }
-		//		public IContainer Container { get; set; }
-
 		private const string TestSuffixConvention = "Tests";
 
 		public DatabaseFixture()
@@ -34,13 +32,9 @@ namespace Catalog.DTO.Tests.Unit
 
 			Context = this.serviceProvider.GetService<Context>(); // Context.ContextDesignFactory.CreateDbContext(Config);
 			ILogger<ContextSeed> logger = new Microsoft.Extensions.Logging.Abstractions.NullLogger<ContextSeed>();
-			//				LoggerFactory loggerFactory = new LoggerFactory();
-			//				ILogger<ContextSeed> logger = loggerFactory.AddConsole().CreateLogger<ContextSeed>();
-
 			ContextSeed seed = new ContextSeed();
 
 			seed.SeedAsync(Context, logger, false, Environment.CurrentDirectory, "").Wait();
-
 		}
 
 
@@ -56,7 +50,6 @@ namespace Catalog.DTO.Tests.Unit
 			services.AddLogging();
 
 			// build configuration
-
 			services.AddDbContext<Context>(options =>
 			{
 				options.ConfigureFromSettings<Context>(Config);

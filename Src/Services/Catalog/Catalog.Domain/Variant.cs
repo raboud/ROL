@@ -1,20 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace ROL.Services.Catalog.Domain
 {
+	[Table("Variant")]
 	public class Variant : MetaDataEntity
 	{
+		[Key]
 		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 		public Guid Id { get; set; }
+
+		[Required]
+		[MaxLength(100)]
 		public string Name { get; set; }
 
 		public string PictureFileName { get; set; }
-		public Guid ItemId { get; set; }
-		public Item Item { get; set; }
+
 
 		[Column(TypeName = "Decimal(19,4)")]
 		public decimal Price { get; set; }
@@ -26,6 +31,9 @@ namespace ROL.Services.Catalog.Domain
 		public Guid UnitId { get; set; }
 		public Unit Unit { get; set; }
 		public int Count { get; set; }
+
+		public Guid ItemId { get; set; }
+		public Item Item { get; set; }
 
 		public Guid VendorId { get; set; }
 		public Vendor Vendor { get; set; }

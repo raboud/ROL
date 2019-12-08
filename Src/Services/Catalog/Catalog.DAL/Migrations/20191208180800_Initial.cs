@@ -70,9 +70,9 @@ namespace ROL.Services.Catalog.DAL.Migrations
                 name: "Item",
                 columns: table => new
                 {
-                    MetaData = table.Column<string>(maxLength: 4000, nullable: false),
                     Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(maxLength: 50, nullable: false),
+                    MetaData = table.Column<string>(type: "jsonb", nullable: false),
+                    Name = table.Column<string>(maxLength: 100, nullable: false),
                     Description = table.Column<string>(nullable: true),
                     PictureFileName = table.Column<string>(nullable: true),
                     BrandId = table.Column<Guid>(nullable: false),
@@ -117,24 +117,23 @@ namespace ROL.Services.Catalog.DAL.Migrations
                 name: "Variant",
                 columns: table => new
                 {
-                    MetaData = table.Column<string>(maxLength: 4000, nullable: false),
                     Id = table.Column<Guid>(nullable: false),
-                    Name = table.Column<string>(maxLength: 50, nullable: false),
+                    MetaData = table.Column<string>(type: "jsonb", nullable: false),
+                    Name = table.Column<string>(maxLength: 100, nullable: false),
                     PictureFileName = table.Column<string>(nullable: true),
-                    ItemId = table.Column<Guid>(nullable: false),
                     Price = table.Column<decimal>(type: "Decimal(19,4)", nullable: false),
                     Cost = table.Column<decimal>(type: "Decimal(19,4)", nullable: false),
                     SuggestPrice = table.Column<decimal>(type: "Decimal(19,4)", nullable: false),
                     UnitId = table.Column<Guid>(nullable: false),
                     Count = table.Column<int>(nullable: false),
+                    ItemId = table.Column<Guid>(nullable: false),
                     VendorId = table.Column<Guid>(nullable: false),
                     UPC = table.Column<string>(nullable: true),
                     SKU = table.Column<string>(nullable: true),
                     AvailableStock = table.Column<int>(nullable: false),
                     RestockThreshold = table.Column<int>(nullable: false),
                     MaxStockThreshold = table.Column<int>(nullable: false),
-                    OnReorder = table.Column<bool>(nullable: false),
-                    ItemId1 = table.Column<Guid>(nullable: true)
+                    OnReorder = table.Column<bool>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -145,12 +144,6 @@ namespace ROL.Services.Catalog.DAL.Migrations
                         principalTable: "Item",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Variant_Item_ItemId1",
-                        column: x => x.ItemId1,
-                        principalTable: "Item",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Variant_Unit_UnitId",
                         column: x => x.UnitId,
@@ -202,11 +195,6 @@ namespace ROL.Services.Catalog.DAL.Migrations
                 name: "IX_Variant_ItemId",
                 table: "Variant",
                 column: "ItemId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Variant_ItemId1",
-                table: "Variant",
-                column: "ItemId1");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Variant_UnitId",

@@ -15,19 +15,22 @@ namespace ROL.Services.Catalog.DAL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.3-rtm-32065")
+                .HasAnnotation("ProductVersion", "3.1.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("ROL.Services.Catalog.Domain.Brand", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("InActive");
+                    b.Property<bool>("InActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
                     b.HasKey("Id");
@@ -41,15 +44,19 @@ namespace ROL.Services.Catalog.DAL.Migrations
             modelBuilder.Entity("ROL.Services.Catalog.Domain.Category", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("InActive");
+                    b.Property<bool>("InActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
-                    b.Property<Guid>("ParentId");
+                    b.Property<Guid>("ParentId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
@@ -64,23 +71,29 @@ namespace ROL.Services.Catalog.DAL.Migrations
             modelBuilder.Entity("ROL.Services.Catalog.Domain.Item", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("BrandId");
+                    b.Property<Guid>("BrandId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Description");
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("InActive");
+                    b.Property<bool>("InActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("MetaData")
                         .IsRequired()
-                        .HasMaxLength(4000);
+                        .HasColumnType("jsonb");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50);
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
 
-                    b.Property<string>("PictureFileName");
+                    b.Property<string>("PictureFileName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -91,9 +104,11 @@ namespace ROL.Services.Catalog.DAL.Migrations
 
             modelBuilder.Entity("ROL.Services.Catalog.Domain.ItemCategory", b =>
                 {
-                    b.Property<Guid>("ItemId");
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("CategoryId");
+                    b.Property<Guid>("CategoryId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("ItemId", "CategoryId");
 
@@ -105,12 +120,15 @@ namespace ROL.Services.Catalog.DAL.Migrations
             modelBuilder.Entity("ROL.Services.Catalog.Domain.Unit", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("InActive");
+                    b.Property<bool>("InActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
                     b.HasKey("Id");
@@ -124,54 +142,63 @@ namespace ROL.Services.Catalog.DAL.Migrations
             modelBuilder.Entity("ROL.Services.Catalog.Domain.Variant", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("AvailableStock");
+                    b.Property<int>("AvailableStock")
+                        .HasColumnType("int");
 
                     b.Property<decimal>("Cost")
                         .HasColumnType("Decimal(19,4)");
 
-                    b.Property<int>("Count");
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
 
-                    b.Property<Guid>("ItemId");
+                    b.Property<Guid>("ItemId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("ItemId1");
-
-                    b.Property<int>("MaxStockThreshold");
+                    b.Property<int>("MaxStockThreshold")
+                        .HasColumnType("int");
 
                     b.Property<string>("MetaData")
                         .IsRequired()
-                        .HasMaxLength(4000);
+                        .HasColumnType("jsonb");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(50);
+                        .HasColumnType("nvarchar(100)")
+                        .HasMaxLength(100);
 
-                    b.Property<bool>("OnReorder");
+                    b.Property<bool>("OnReorder")
+                        .HasColumnType("bit");
 
-                    b.Property<string>("PictureFileName");
+                    b.Property<string>("PictureFileName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("Price")
                         .HasColumnType("Decimal(19,4)");
 
-                    b.Property<int>("RestockThreshold");
+                    b.Property<int>("RestockThreshold")
+                        .HasColumnType("int");
 
-                    b.Property<string>("SKU");
+                    b.Property<string>("SKU")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<decimal>("SuggestPrice")
                         .HasColumnType("Decimal(19,4)");
 
-                    b.Property<string>("UPC");
+                    b.Property<string>("UPC")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("UnitId");
+                    b.Property<Guid>("UnitId")
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("VendorId");
+                    b.Property<Guid>("VendorId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ItemId");
-
-                    b.HasIndex("ItemId1");
 
                     b.HasIndex("UnitId");
 
@@ -186,12 +213,15 @@ namespace ROL.Services.Catalog.DAL.Migrations
             modelBuilder.Entity("ROL.Services.Catalog.Domain.Vendor", b =>
                 {
                     b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd();
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<bool>("InActive");
+                    b.Property<bool>("InActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
+                        .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
                     b.HasKey("Id");
@@ -207,7 +237,8 @@ namespace ROL.Services.Catalog.DAL.Migrations
                     b.HasOne("ROL.Services.Catalog.Domain.Category", "Parent")
                         .WithMany("Children")
                         .HasForeignKey("ParentId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ROL.Services.Catalog.Domain.Item", b =>
@@ -215,7 +246,8 @@ namespace ROL.Services.Catalog.DAL.Migrations
                     b.HasOne("ROL.Services.Catalog.Domain.Brand", "Brand")
                         .WithMany()
                         .HasForeignKey("BrandId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ROL.Services.Catalog.Domain.ItemCategory", b =>
@@ -223,34 +255,35 @@ namespace ROL.Services.Catalog.DAL.Migrations
                     b.HasOne("ROL.Services.Catalog.Domain.Category", "Category")
                         .WithMany("ItemCategories")
                         .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ROL.Services.Catalog.Domain.Item", "Item")
                         .WithMany("ItemCategories")
                         .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("ROL.Services.Catalog.Domain.Variant", b =>
                 {
                     b.HasOne("ROL.Services.Catalog.Domain.Item", "Item")
-                        .WithMany()
-                        .HasForeignKey("ItemId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("ROL.Services.Catalog.Domain.Item")
                         .WithMany("Variants")
-                        .HasForeignKey("ItemId1");
+                        .HasForeignKey("ItemId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ROL.Services.Catalog.Domain.Unit", "Unit")
                         .WithMany()
                         .HasForeignKey("UnitId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("ROL.Services.Catalog.Domain.Vendor", "Vendor")
                         .WithMany()
                         .HasForeignKey("VendorId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

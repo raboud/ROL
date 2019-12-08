@@ -9,14 +9,6 @@ namespace ROL.Services.Catalog.DAL.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<Category> builder)
         {
-            builder.ToTable("Category");
-
-            builder.HasKey(ci => ci.Id);
-
-            builder.Property(cb => cb.Name)
-                .IsRequired()
-                .HasMaxLength(100);
-
 			builder.HasIndex(v => v.Name)
 				.IsUnique();
 
